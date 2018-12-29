@@ -33,9 +33,9 @@ public class QueueTaskConsumer {
         for (;;) {
             try {
                 QueueTask task = delayTaskQueue.queue.take();
-                log.info(String.format("task %s begin", task.getTaskId()));
 
                 try {
+                    log.info(String.format("task %s begin", task.getTaskId()));
                     asyncQueueTaskConsumer.doConsumer(task);
                 } catch (Exception e) {
                     // 确保doConsumer的异常不会中断循环
