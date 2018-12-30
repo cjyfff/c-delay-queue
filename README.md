@@ -18,6 +18,7 @@
 2. 根据本项目的`scripts/db.sql`创建数据库和数据表
 3. 修改本项目中`src/main/resources/application.properties.example`，重命名为`application.properties`，并修改相关配置。主要需要修改的项为：
 * `l_election.specified_local_ip`，指定本机ip，不指定的话将自动检测，自动检测时假如本机拥有多个ip可能会获取到错误的ip
+* `l_election.specified_port`，指定本机服务端口，一般与`server.port`一致
 * `l_election.zk_host`，zookeeper地址以及端口，假如是集群的话使用逗号分隔，如`192.168.43.9:2181,192.168.43.42:2181,192.168.43.241:2181`
 * `jdbc.write.url`和`jdbc.read.url`，写库以及读库uri，假如没有读写分类数据库的话可以指定为同一个数据库
 4. 接下来就可以编译运行本项目
