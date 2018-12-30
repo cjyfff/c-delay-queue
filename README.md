@@ -14,7 +14,7 @@
 2. zookeeper 3.4 不支持3.5
 
 ## 运行、部署步骤
-1. 下载选举模块（https://github.com/cjyfff/l-election.git），安装到本地mvn仓库
+1. 下载[l-election选举sdk](https://github.com/cjyfff/l-election.git)，安装到本地mvn仓库
 2. 根据本项目的`scripts/db.sql`创建数据库和数据表
 3. 修改本项目中`src/main/resources/application.properties.example`，重命名为`application.properties`，并修改相关配置。主要需要修改的项为：
 * `l_election.specified_local_ip`，指定本机ip，不指定的话将自动检测，自动检测时假如本机拥有多个ip可能会获取到错误的ip
