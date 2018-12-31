@@ -24,9 +24,33 @@
 4. 接下来就可以编译运行本项目
 
 
-## 接口调用方法（待完善）
+## 接口调用方法
 1. 新增任务接口
-2. 监控接口
+调用`/dq/acceptMsg`接口进行新增任务，参数使用json传输，具体参数如下：
+
+| 参数名称 | 类型 | 是否必填 | 长度限制 | 说明 |
+| :------: | :------: | :------: | :------: | :-----: |
+| taskId | str |  Y | 32 | 任务识别id，必须保证唯一，建议使用uuid生成 |
+| functionName | str | Y | 1~100 | 调用的服务逻辑类名称，与下文介绍中的`TaskHandler`注解的`value`参数一致 |
+| params | int | N | 0~1000 | 调用服务逻辑的参数字符串 |
+| retryCount | int | N | 0~10 | 任务执行失败时的重试次数，不指定代表不重试 |
+| retryInterval | int | N | 1~60 | 任务执行失败时的重试间隔，不指定的话设为1，单位秒 |
+| delayTime | int | Y | >1 | 延时时间，单位秒 |
+| nonceStr | str | Y | 32 | 随机字符串，用于接口幂等，当接口请求失败，调用方对接口进行重试时，要带上相同的值 |
+
+调用例子：
+```
+{
+	"taskId": "d610ec9031674206a359f6a1f5afb4a9",
+	"functionName": "exampleHandler",
+	"params": "{}",
+	"retryCount": 0,
+	"retryInterval": 1,
+	"delayTime": 10,
+	"nonceStr": "37140de3f8634ffb98a0eff55b18d37c"
+}
+```
+2. 监控接口（待完善）
 
 ## 自定义任务方法
 延时任务服务的目的就是让系统可以在指定时间调用指定的服务逻辑，因此定义自己服务逻辑类十分必要。实现的方式可以参考`com.cjyfff.dq.task.handler.impl.ExampleHandler`。有以下几个注意点：
