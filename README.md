@@ -50,7 +50,22 @@
 	"nonceStr": "37140de3f8634ffb98a0eff55b18d37c"
 }
 ```
-2. 监控接口（待完善）
+2. 监控接口
+调用`/monitor/nodeInfo`接口可以查看服务的选举状态以及分片信息，具体例子如下：
+```
+{
+    // 集群分片信息map，key为分片节点id，value为分片节点的ip以及端口
+    "shardingMap": {
+        "0": "192.168.43.221:8888"
+    },
+    // 本机分片id
+    "nodeId": 0,
+    // 本机选举状态，1代表完成，0代表选举未完成
+    "electionStatus": 1,
+    // 本机是否集群的master
+    "leader": true
+}
+```
 
 ## 自定义任务方法
 延时任务服务的目的就是让系统可以在指定时间调用指定的服务逻辑，因此定义自己服务逻辑类十分必要。实现的方式可以参考`com.cjyfff.dq.task.handler.impl.ExampleHandler`。有以下几个注意点：
