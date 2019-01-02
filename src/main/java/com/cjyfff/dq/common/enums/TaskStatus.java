@@ -1,4 +1,4 @@
-package com.cjyfff.dq.task.common.enums;
+package com.cjyfff.dq.common.enums;
 
 
 /**

@@ -2,10 +2,11 @@ package com.cjyfff.dq.task.service.impl;
 
 import java.util.Date;
 
-import com.cjyfff.dq.task.common.ApiException;
-import com.cjyfff.dq.task.common.enums.TaskStatus;
-import com.cjyfff.dq.task.common.component.AcceptTaskComponent;
-import com.cjyfff.dq.task.common.component.ExecLogComponent;
+import com.cjyfff.dq.common.error.ApiException;
+import com.cjyfff.dq.common.enums.TaskStatus;
+import com.cjyfff.dq.common.component.AcceptTaskComponent;
+import com.cjyfff.dq.common.component.ExecLogComponent;
+import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.queue.QueueTask;
@@ -58,7 +59,7 @@ public class MsgServiceComponent {
     DelayTask createTask(BaseMsgDto reqDto) throws Exception {
         DelayTask oldDelayTask = delayTaskMapper.selectByTaskIdForUpdate(reqDto.getTaskId());
         if (oldDelayTask != null) {
-            throw new ApiException("-130", "Same task id is exist.");
+            throw new ApiException(ErrorCodeMsg.TASK_ID_EXIST_CODE, ErrorCodeMsg.TASK_ID_EXIST_MSG);
         }
 
         DelayTask delayTask = new DelayTask();

@@ -1,11 +1,12 @@
-package com.cjyfff.dq.task.common.component;
+package com.cjyfff.dq.common.component;
 
 import java.util.Map;
 
+import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.election.info.ElectionStatus;
 import com.cjyfff.election.info.ElectionStatus.ElectionStatusType;
 import com.cjyfff.election.info.ShardingInfo;
-import com.cjyfff.dq.task.common.ApiException;
+import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.task.queue.QueueTask;
 import com.cjyfff.dq.task.queue.DelayTaskQueue;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class AcceptTaskComponent {
      */
     public void checkElectionStatus() throws ApiException {
         if (! ElectionStatusType.FINISH.equals(electionStatus.getElectionStatus())) {
-            throw new ApiException("101", "选举未完成，不接受请求");
+            throw new ApiException(ErrorCodeMsg.ELECTION_NOT_FINISHED_CODE, ErrorCodeMsg.ELECTION_NOT_FINISHED_MSG);
         }
     }
 

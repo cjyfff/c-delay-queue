@@ -1,11 +1,11 @@
-package com.cjyfff.dq.task.common.aop;
+package com.cjyfff.dq.common.aop;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.cjyfff.dq.task.common.lock.UnlockAfterDbCommitInfoHolder;
-import com.cjyfff.dq.task.common.lock.UnlockAfterDbCommitInfoHolder.UnlockAfterDbCommitInfo;
-import com.cjyfff.dq.task.common.lock.ZkLock;
+import com.cjyfff.dq.common.lock.UnlockAfterDbCommitInfoHolder;
+import com.cjyfff.dq.common.lock.UnlockAfterDbCommitInfoHolder.UnlockAfterDbCommitInfo;
+import com.cjyfff.dq.common.lock.ZkLock;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,9 +3,9 @@ package com.cjyfff.dq.task.biz;
 import java.util.List;
 
 import com.cjyfff.election.info.ShardingInfo;
-import com.cjyfff.dq.task.common.enums.TaskStatus;
-import com.cjyfff.dq.task.common.component.AcceptTaskComponent;
-import com.cjyfff.dq.task.common.component.ExecLogComponent;
+import com.cjyfff.dq.common.enums.TaskStatus;
+import com.cjyfff.dq.common.component.AcceptTaskComponent;
+import com.cjyfff.dq.common.component.ExecLogComponent;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.queue.QueueTask;

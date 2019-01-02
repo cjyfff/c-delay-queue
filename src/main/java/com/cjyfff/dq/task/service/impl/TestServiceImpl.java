@@ -1,6 +1,6 @@
 package com.cjyfff.dq.task.service.impl;
 
-import com.cjyfff.dq.task.common.TaskHandlerContext;
+import com.cjyfff.dq.common.TaskHandlerContext;
 import com.cjyfff.dq.task.handler.ITaskHandler;
 import com.cjyfff.dq.task.service.TestService;
 import lombok.extern.slf4j.Slf4j;

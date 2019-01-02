@@ -1,4 +1,4 @@
-package com.cjyfff.dq.task.common.lock;
+package com.cjyfff.dq.common.lock;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

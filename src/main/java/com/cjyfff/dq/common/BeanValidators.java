@@ -1,4 +1,4 @@
-package com.cjyfff.dq.task.common;
+package com.cjyfff.dq.common;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -6,12 +6,16 @@ import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
+import com.cjyfff.dq.common.error.ApiException;
+import com.cjyfff.dq.common.error.ErrorCodeMsg;
+
 /**
  * Created by jiashen on 18-11-1.
  */
 public class BeanValidators {
     @SuppressWarnings("unchecked")
-    public static void validateWithParameterException(Validator validator, Object object, Class<?>... groups) throws ApiException {
+    public static void validateWithParameterException(Validator validator, Object object, Class<?>... groups) throws
+        ApiException {
         Set constraintViolations = validator.validate(object, groups);
         if (!constraintViolations.isEmpty()) {
             String message =  (String)constraintViolations.stream().map(cv -> {
@@ -19,7 +23,7 @@ public class BeanValidators {
                 return
                     "[" + constraintViolation.getPropertyPath().toString() +"]"+ constraintViolation.getMessageTemplate();
             }).collect(Collectors.joining(","));
-            throw new ApiException("-888", "Parameters validate get error:" + message);
+            throw new ApiException(ErrorCodeMsg.PARAM_VALIDATE_ERROR_CODE, "Parameters validate get error:" + message);
         }
     }
 }

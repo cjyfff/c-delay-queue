@@ -1,7 +1,8 @@
 package com.cjyfff.dq.task.service.impl;
 
-import com.cjyfff.dq.task.common.ApiException;
-import com.cjyfff.dq.task.common.component.AcceptTaskComponent;
+import com.cjyfff.dq.common.error.ApiException;
+import com.cjyfff.dq.common.component.AcceptTaskComponent;
+import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.service.InnerMsgService;
 import com.cjyfff.dq.task.vo.dto.InnerMsgDto;
@@ -31,7 +32,7 @@ public class InnerMsgServiceImpl implements InnerMsgService {
         if (! acceptTaskComponent.checkIsMyTask(reqDto.getTaskId())) {
             String errMsg = String.format("%s is not my task", reqDto.getTaskId());
             log.error(errMsg);
-            throw new ApiException("-401", errMsg);
+            throw new ApiException(ErrorCodeMsg.IS_NOT_MY_TASK_CODE, errMsg);
         }
 
         DelayTask delayTask = msgServiceComponent.createTask(reqDto);

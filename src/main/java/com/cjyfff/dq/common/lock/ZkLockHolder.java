@@ -1,9 +1,8 @@
-package com.cjyfff.dq.task.common.lock;
+package com.cjyfff.dq.common.lock;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.collect.Maps;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.springframework.util.StringUtils;
 

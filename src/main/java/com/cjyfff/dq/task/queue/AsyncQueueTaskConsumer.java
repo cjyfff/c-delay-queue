@@ -2,10 +2,10 @@ package com.cjyfff.dq.task.queue;
 
 import java.util.Date;
 
-import com.cjyfff.dq.task.common.TaskHandlerContext;
-import com.cjyfff.dq.task.common.component.AcceptTaskComponent;
-import com.cjyfff.dq.task.common.component.ExecLogComponent;
-import com.cjyfff.dq.task.common.enums.TaskStatus;
+import com.cjyfff.dq.common.TaskHandlerContext;
+import com.cjyfff.dq.common.component.AcceptTaskComponent;
+import com.cjyfff.dq.common.component.ExecLogComponent;
+import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.task.handler.HandlerResult;
 import com.cjyfff.dq.task.handler.ITaskHandler;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;

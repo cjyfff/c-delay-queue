@@ -1,4 +1,4 @@
-package com.cjyfff.dq.task.common;
+package com.cjyfff.dq.common.error;
 
 import lombok.Getter;
 import lombok.Setter;

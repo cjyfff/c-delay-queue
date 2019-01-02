@@ -1,4 +1,4 @@
-package com.cjyfff.dq.task.common.aop;
+package com.cjyfff.dq.common.aop;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -1,4 +1,4 @@
-package com.cjyfff.dq.task.common;
+package com.cjyfff.dq.common;
 
 /**
  * Created by jiashen on 2018/9/23.

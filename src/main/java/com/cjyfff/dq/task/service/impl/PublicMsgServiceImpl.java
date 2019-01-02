@@ -4,16 +4,17 @@ import java.util.UUID;
 
 import com.alibaba.fastjson.JSON;
 
+import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.election.info.ShardingInfo;
-import com.cjyfff.dq.task.common.ApiException;
-import com.cjyfff.dq.task.common.DefaultWebApiResult;
-import com.cjyfff.dq.task.common.HttpUtils;
-import com.cjyfff.dq.task.common.TaskHandlerContext;
+import com.cjyfff.dq.common.error.ApiException;
+import com.cjyfff.dq.common.DefaultWebApiResult;
+import com.cjyfff.dq.common.HttpUtils;
+import com.cjyfff.dq.common.TaskHandlerContext;
 import com.cjyfff.dq.task.handler.ITaskHandler;
 import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.service.PublicMsgService;
 import com.cjyfff.dq.task.vo.dto.AcceptMsgDto;
-import com.cjyfff.dq.task.common.component.AcceptTaskComponent;
+import com.cjyfff.dq.common.component.AcceptTaskComponent;
 import com.cjyfff.dq.task.vo.dto.InnerMsgDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -61,7 +62,7 @@ public class PublicMsgServiceImpl implements PublicMsgService {
                 String targetHost = shardingInfo.getShardingMap().get(targetShardingId);
 
                 if (targetHost == null) {
-                    throw new ApiException("-201",
+                    throw new ApiException(ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_CODE,
                         String.format("Can not get sharding info, sharding id: %s, task id: %s",
                             targetShardingId.toString(), reqDto.getTaskId()));
                 }
@@ -84,7 +85,9 @@ public class PublicMsgServiceImpl implements PublicMsgService {
     private void checkFunctionName(String functionName) throws ApiException {
         ITaskHandler taskHandler = taskHandlerContext.getTaskHandler(functionName);
         if (taskHandler == null) {
-            throw new ApiException("-106", "Can not find handler by specified function name.");
+            throw new ApiException(
+                ErrorCodeMsg.CAN_NOT_FIND_HANDLER_BY_SPECIFIED_FUNCTION_NAME_CODE,
+                ErrorCodeMsg.CAN_NOT_FIND_HANDLER_BY_SPECIFIED_FUNCTION_NAME_MSG);
         }
     }
 
@@ -98,7 +101,7 @@ public class PublicMsgServiceImpl implements PublicMsgService {
         DefaultWebApiResult result = JSON.parseObject(resultJson, DefaultWebApiResult.class);
         if (!DefaultWebApiResult.SUCCESS_CODE.equals(result.getCode())) {
             log.error("Send inner task get error: " + result.getMsg());
-            throw new ApiException("-120", "Send inner task get error: " + result.getMsg());
+            throw new ApiException(ErrorCodeMsg.SEND_INNER_TASK_GET_ERROR_CODE, "Send inner task get error: " + result.getMsg());
         }
     }
 }

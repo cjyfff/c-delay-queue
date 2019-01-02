@@ -1,4 +1,4 @@
-package com.cjyfff.dq.task.common;
+package com.cjyfff.dq.common;
 
 import java.io.IOException;
 

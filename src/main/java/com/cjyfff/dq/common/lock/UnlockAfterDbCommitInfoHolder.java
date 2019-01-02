@@ -1,4 +1,4 @@
-package com.cjyfff.dq.task.common.lock;
+package com.cjyfff.dq.common.lock;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -1,7 +1,6 @@
-package com.cjyfff.dq.task.common.lock;
+package com.cjyfff.dq.common.lock;
 
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.locks.InterProcessLock;
 
 /**
  * Created by jiashen on 2018/10/30.

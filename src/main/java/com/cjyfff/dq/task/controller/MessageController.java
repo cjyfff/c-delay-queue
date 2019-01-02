@@ -1,11 +1,12 @@
 package com.cjyfff.dq.task.controller;
 
+import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.election.config.ZooKeeperClient;
-import com.cjyfff.dq.task.common.ApiException;
-import com.cjyfff.dq.task.common.BeanValidators;
-import com.cjyfff.dq.task.common.DefaultWebApiResult;
-import com.cjyfff.dq.task.common.TaskConfig;
-import com.cjyfff.dq.task.common.lock.ZkLock;
+import com.cjyfff.dq.common.error.ApiException;
+import com.cjyfff.dq.common.BeanValidators;
+import com.cjyfff.dq.common.DefaultWebApiResult;
+import com.cjyfff.dq.common.TaskConfig;
+import com.cjyfff.dq.common.lock.ZkLock;
 import com.cjyfff.dq.task.service.InnerMsgService;
 import com.cjyfff.dq.task.service.PublicMsgService;
 import com.cjyfff.dq.task.service.TestService;
@@ -49,7 +50,7 @@ public class MessageController extends BaseController {
             BeanValidators.validateWithParameterException(validator, reqDto);
 
             if (! zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr())) {
-                return DefaultWebApiResult.failure("-889", "This task is processing...");
+                return DefaultWebApiResult.failure(ErrorCodeMsg.TASK_IS_PROCESSING_CODE, ErrorCodeMsg.TASK_IS_PROCESSING_MSG);
             }
 
             publicMsgService.acceptMsg(reqDto);
@@ -58,7 +59,7 @@ public class MessageController extends BaseController {
             return DefaultWebApiResult.failure(ae.getCode(), ae.getMsg());
         } catch (Exception e) {
             log.error("publicMsgService acceptMsg get error: ", e);
-            return DefaultWebApiResult.failure("-1", "system error");
+            return DefaultWebApiResult.failure(ErrorCodeMsg.SYSTEM_ERROR_CODE, ErrorCodeMsg.SYSTEM_ERROR_MSG);
         } finally {
             zkLock.tryUnlock(TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
         }
@@ -73,7 +74,7 @@ public class MessageController extends BaseController {
             BeanValidators.validateWithParameterException(validator, reqDto);
 
             if (! zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr())) {
-                return DefaultWebApiResult.failure("-889", "This task is processing...");
+                return DefaultWebApiResult.failure(ErrorCodeMsg.TASK_IS_PROCESSING_CODE, ErrorCodeMsg.TASK_IS_PROCESSING_MSG);
             }
 
             innerMsgService.acceptMsg(reqDto);
@@ -82,7 +83,7 @@ public class MessageController extends BaseController {
             return DefaultWebApiResult.failure(ae.getCode(), ae.getMsg());
         } catch (Exception e) {
             log.error("innerMsgService acceptMsg get error: ", e);
-            return DefaultWebApiResult.failure("-1", "system error");
+            return DefaultWebApiResult.failure(ErrorCodeMsg.SYSTEM_ERROR_CODE, ErrorCodeMsg.SYSTEM_ERROR_MSG);
         } finally {
             zkLock.tryUnlock(TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
         }
