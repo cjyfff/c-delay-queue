@@ -16,9 +16,11 @@ import com.cjyfff.dq.task.service.PublicMsgService;
 import com.cjyfff.dq.task.vo.dto.AcceptMsgDto;
 import com.cjyfff.dq.common.component.AcceptTaskComponent;
 import com.cjyfff.dq.task.vo.dto.InnerMsgDto;
+import com.google.common.util.concurrent.RateLimiter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,9 +43,37 @@ public class PublicMsgServiceImpl implements PublicMsgService {
     @Autowired
     private MsgServiceComponent msgServiceComponent;
 
+    @Value("${delay_queue.task_rate_limit_permits}")
+    private double taskRateLimitPermits;
+
+    @Value("${delay_queue.enable_task_rate_limit}")
+    private boolean enableTaskRateLimit;
+
+    private RateLimiter rateLimiter;
+
+    public PublicMsgServiceImpl(@Value("${delay_queue.enable_task_rate_limit}") boolean etl,
+                                @Value("${delay_queue.task_rate_limit_permits}") double tlp) {
+        if (etl) {
+            if (tlp > 0) {
+                rateLimiter = RateLimiter.create(tlp);
+            }
+        }
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void acceptMsg(AcceptMsgDto reqDto) throws Exception {
+        // 限流逻辑
+        if (enableTaskRateLimit) {
+            if (rateLimiter == null) {
+                throw new ApiException(ErrorCodeMsg.SYSTEM_ERROR_CODE, "RateLimiter is not initialization, check the configuration.");
+            }
+            if (! rateLimiter.tryAcquire(1)) {
+                log.warn("Reach task rate limit, request params is: " + JSON.toJSON(reqDto));
+                return;
+            }
+        }
+
         acceptTaskComponent.checkElectionStatus();
 
         checkFunctionName(reqDto.getFunctionName());
