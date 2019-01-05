@@ -1,7 +1,7 @@
 package com.cjyfff.dq.monitor.service.impl;
 
-import com.cjyfff.election.info.ElectionStatus;
-import com.cjyfff.election.info.ShardingInfo;
+import com.cjyfff.election.core.info.ElectionStatus;
+import com.cjyfff.election.core.info.ShardingInfo;
 import com.cjyfff.dq.monitor.controller.vo.MonitorNodeInfoVo;
 import com.cjyfff.dq.monitor.service.MonitorService;
 import org.springframework.beans.factory.annotation.Autowired;

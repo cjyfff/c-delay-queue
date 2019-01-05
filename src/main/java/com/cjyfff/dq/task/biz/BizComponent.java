@@ -2,7 +2,7 @@ package com.cjyfff.dq.task.biz;
 
 import java.util.List;
 
-import com.cjyfff.election.info.ShardingInfo;
+import com.cjyfff.election.core.info.ShardingInfo;
 import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.component.AcceptTaskComponent;
 import com.cjyfff.dq.common.component.ExecLogComponent;

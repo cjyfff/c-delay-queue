@@ -2,7 +2,7 @@ package com.cjyfff.dq.common.component;
 
 import java.util.Date;
 
-import com.cjyfff.election.info.ShardingInfo;
+import com.cjyfff.election.core.info.ShardingInfo;
 import com.cjyfff.dq.task.mapper.DelayQueueExecLogMapper;
 import com.cjyfff.dq.task.model.DelayQueueExecLog;
 import com.cjyfff.dq.task.model.DelayTask;

@@ -10,7 +10,7 @@ import com.cjyfff.dq.task.handler.HandlerResult;
 import com.cjyfff.dq.task.handler.ITaskHandler;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;
-import com.cjyfff.election.info.ShardingInfo;
+import com.cjyfff.election.core.info.ShardingInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;

@@ -3,9 +3,9 @@ package com.cjyfff.dq.task.schedule;
 import java.util.Date;
 import java.util.List;
 
-import com.cjyfff.election.info.ElectionStatus;
-import com.cjyfff.election.info.ElectionStatus.ElectionStatusType;
-import com.cjyfff.election.info.ShardingInfo;
+import com.cjyfff.election.core.info.ElectionStatus;
+import com.cjyfff.election.core.info.ElectionStatus.ElectionStatusType;
+import com.cjyfff.election.core.info.ShardingInfo;
 import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.component.AcceptTaskComponent;
 import com.cjyfff.dq.common.component.ExecLogComponent;

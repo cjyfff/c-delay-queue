@@ -25,7 +25,7 @@ public class MyInterProcessSemaphoreMutex implements InterProcessLock {
 
     private volatile Lease lease;
 
-    public MyInterProcessSemaphoreMutex(CuratorFramework client, String path) {
+    MyInterProcessSemaphoreMutex(CuratorFramework client, String path) {
         this.client = client;
         this.path = path;
     }
@@ -51,7 +51,7 @@ public class MyInterProcessSemaphoreMutex implements InterProcessLock {
     public boolean acquire(long timeOut, TimeUnit timeUnit) throws Exception {
         checkPath();
 
-        Long expertTime = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(timeOut, timeUnit);
+        long expertTime = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(timeOut, timeUnit);
 
         for (;;) {
             try {

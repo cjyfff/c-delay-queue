@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.alibaba.fastjson.JSON;
 
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
-import com.cjyfff.election.info.ShardingInfo;
+import com.cjyfff.election.core.info.ShardingInfo;
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.DefaultWebApiResult;
 import com.cjyfff.dq.common.HttpUtils;
