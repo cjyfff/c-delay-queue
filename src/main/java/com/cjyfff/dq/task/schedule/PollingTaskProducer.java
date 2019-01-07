@@ -62,7 +62,7 @@ public class PollingTaskProducer {
         // 所以也不会出现这种可能。
         // 因此这里的数据查询不用加锁。
         List<DelayTask> taskList = delayTaskMapper.selectByStatusAndExecuteTime(TaskStatus.POLLING.getStatus(),
-            shardingInfo.getNodeId().byteValue(), nowSecond, nowSecond + pollingTime);
+            shardingInfo.getNodeId().byteValue(), 0L, nowSecond + pollingTime);
 
         for (DelayTask delayTask : taskList) {
             QueueTask task = new QueueTask(
