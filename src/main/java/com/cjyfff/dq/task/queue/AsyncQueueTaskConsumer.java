@@ -39,7 +39,7 @@ public class AsyncQueueTaskConsumer {
     @Autowired
     private AcceptTaskComponent acceptTaskComponent;
 
-    @Async
+    @Async("taskConsumerExecutor")
     @Transactional(rollbackFor = Exception.class)
     void doConsumer(QueueTask task) {
         // 1、乐观锁更新状态
