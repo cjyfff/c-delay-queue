@@ -15,11 +15,9 @@ public class QueueTask implements Delayed {
 
     private String taskId;
 
-    public TimeUnit delayTimeUnit;
+    private TimeUnit delayTimeUnit;
 
-    public Long executeTime;
-
-    private QueueTask() {}
+    private Long executeTime;
 
     public QueueTask(String taskId, Long executeTimeSec) {
         this.taskId = taskId;
