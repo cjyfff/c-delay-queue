@@ -36,10 +36,7 @@ public class BizComponent {
             shardingInfo.getNodeId().byteValue());
 
         for (DelayTask delayTask : myDelayTaskList) {
-            QueueTask task = new QueueTask(
-                delayTask.getTaskId(), delayTask.getFunctionName(), delayTask.getParams(),
-                delayTask.getExecuteTime()
-            );
+            QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());
             acceptTaskComponent.pushToQueue(task);
 
             execLogComponent.insertLog(delayTask, TaskStatus.IN_QUEUE.getStatus(),

@@ -30,10 +30,7 @@ public class MsgServiceComponent {
     private ExecLogComponent execLogComponent;
 
     void doPush2Queue(DelayTask delayTask) {
-        QueueTask task = new QueueTask(
-            delayTask.getTaskId(), delayTask.getFunctionName(), delayTask.getParams(),
-            delayTask.getExecuteTime()
-        );
+        QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());
         acceptTaskComponent.pushToQueue(task);
         delayTask.setStatus(TaskStatus.IN_QUEUE.getStatus());
         delayTask.setModifiedAt(new Date());

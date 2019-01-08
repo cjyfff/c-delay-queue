@@ -65,10 +65,7 @@ public class PollingTaskProducer {
             shardingInfo.getNodeId().byteValue(), 0L, nowSecond + pollingTime);
 
         for (DelayTask delayTask : taskList) {
-            QueueTask task = new QueueTask(
-                delayTask.getTaskId(), delayTask.getFunctionName(), delayTask.getParams(),
-                delayTask.getExecuteTime()
-            );
+            QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());
             acceptTaskComponent.pushToQueue(task);
 
             delayTask.setStatus(TaskStatus.IN_QUEUE.getStatus());
