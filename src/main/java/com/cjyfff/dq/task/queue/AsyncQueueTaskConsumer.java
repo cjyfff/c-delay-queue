@@ -46,8 +46,8 @@ public class AsyncQueueTaskConsumer {
         // 2、用task id 查出数据
         // 3、处理
         // 4、修改状态
-        if (delayTaskMapper.updateStatusByOldStatusAndTaskId(TaskStatus.IN_QUEUE.getStatus(),
-            TaskStatus.PROCESSING.getStatus(), shardingInfo.getNodeId().byteValue(), task.getTaskId()) > 0) {
+        if (delayTaskMapper.updateStatusByTaskIdAndOldStatus(task.getTaskId(), TaskStatus.IN_QUEUE.getStatus(),
+            TaskStatus.PROCESSING.getStatus(), shardingInfo.getNodeId().byteValue()) > 0) {
 
             DelayTask delayTask = delayTaskMapper.selectByTaskId(task.getTaskId());
 

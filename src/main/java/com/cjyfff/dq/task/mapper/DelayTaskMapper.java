@@ -18,10 +18,10 @@ public interface DelayTaskMapper {
 
     int updateByPrimaryKeySelective(DelayTask record);
 
-    int updateStatusByOldStatusAndTaskId(@Param(value = "oldStatus") Integer oldStatus,
+    int updateStatusByTaskIdAndOldStatus(@Param(value = "taskId") String taskId,
+                                         @Param(value = "oldStatus") Integer oldStatus,
                                          @Param(value = "newStatus") Integer newStatus,
-                                         @Param(value = "shardingId") Byte shardingId,
-                                         @Param(value = "taskId") String taskId);
+                                         @Param(value = "shardingId") Byte shardingId);
 
     DelayTask selectByTaskId(@Param(value = "taskId") String taskId);
 

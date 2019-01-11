@@ -237,7 +237,7 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <update id="updateStatusByOldStatusAndTaskId">
+  <update id="updateStatusByTaskIdAndOldStatus">
     update delay_task
     set
     status = #{newStatus,jdbcType=INTEGER},
