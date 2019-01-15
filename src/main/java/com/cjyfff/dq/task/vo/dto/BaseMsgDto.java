@@ -54,12 +54,12 @@ public class BaseMsgDto {
      */
     @Min(0)
     @Max(10)
-    private Byte retryCount = 0;
+    private Byte retryCount;
 
     /**
      * 重试周期，单位秒
      */
     @Min(1)
     @Max(60)
-    private Integer retryInterval = 1;
+    private Integer retryInterval;
 }

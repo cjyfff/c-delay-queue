@@ -1,6 +1,7 @@
 package com.cjyfff.dq.task.controller;
 
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
+import com.cjyfff.dq.task.vo.dto.BaseMsgDto;
 import com.cjyfff.election.config.ZooKeeperClient;
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.BeanValidators;
@@ -47,7 +48,7 @@ public class MessageController extends BaseController {
     @RequestMapping(path = "/dq/acceptMsg", method={RequestMethod.POST})
     public DefaultWebApiResult acceptMsg(@RequestBody AcceptMsgDto reqDto) {
         try {
-            BeanValidators.validateWithParameterException(validator, reqDto);
+            checkParams(reqDto);
 
             if (! zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr())) {
                 return DefaultWebApiResult.failure(ErrorCodeMsg.TASK_IS_PROCESSING_CODE, ErrorCodeMsg.TASK_IS_PROCESSING_MSG);
@@ -71,7 +72,7 @@ public class MessageController extends BaseController {
     @RequestMapping(path = "/dq/acceptInnerMsg", method={RequestMethod.POST})
     public DefaultWebApiResult acceptInnerMsg(@RequestBody InnerMsgDto reqDto) {
         try {
-            BeanValidators.validateWithParameterException(validator, reqDto);
+            checkParams(reqDto);
 
             if (! zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr())) {
                 return DefaultWebApiResult.failure(ErrorCodeMsg.TASK_IS_PROCESSING_CODE, ErrorCodeMsg.TASK_IS_PROCESSING_MSG);
@@ -93,5 +94,17 @@ public class MessageController extends BaseController {
     public DefaultWebApiResult test() {
         testService.test();
         return DefaultWebApiResult.success();
+    }
+
+    private void checkParams(BaseMsgDto reqDto) throws ApiException {
+        BeanValidators.validateWithParameterException(validator, reqDto);
+
+        if (reqDto.getRetryCount() == null) {
+            reqDto.setRetryCount(Byte.valueOf("0"));
+        }
+
+        if (reqDto.getRetryInterval() == null) {
+            reqDto.setRetryInterval(1);
+        }
     }
 }
