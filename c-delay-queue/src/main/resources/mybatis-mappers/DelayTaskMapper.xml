@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cjyfff.dq.task.mapper.DelayTaskMapper">
+  <resultMap id="BaseResultMap" type="com.cjyfff.dq.task.model.DelayTask">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="task_id" jdbcType="VARCHAR" property="taskId" />
+    <result column="function_name" jdbcType="VARCHAR" property="functionName" />
+    <result column="params" jdbcType="VARCHAR" property="params" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="delay_time" jdbcType="BIGINT" property="delayTime" />
+    <result column="execute_time" jdbcType="BIGINT" property="executeTime" />
+    <result column="retry_interval" jdbcType="INTEGER" property="retryInterval" />
+    <result column="retry_time" jdbcType="BIGINT" property="retryTime" />
+    <result column="retry_count" jdbcType="TINYINT" property="retryCount" />
+    <result column="already_retry_count" jdbcType="TINYINT" property="alreadyRetryCount" />
+    <result column="sharding_id" jdbcType="TINYINT" property="shardingId" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="modified_at" jdbcType="TIMESTAMP" property="modifiedAt" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, task_id, function_name, params, status, delay_time, execute_time, retry_interval, retry_time, retry_count, already_retry_count, sharding_id,
+    created_at, modified_at
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from delay_task
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByTaskId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from delay_task
+    where task_id = #{taskId,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByTaskIdForUpdate" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from delay_task
+    where task_id = #{taskId,jdbcType=BIGINT}
+    for update
+  </select>
+
+  <select id="selectByTaskIdAndStatus" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from delay_task
+    where task_id = #{taskId,jdbcType=BIGINT}
+    and
+    status = #{oldStatus,jdbcType=INTEGER}
+    and
+    sharding_id = #{shardingId,jdbcType=TINYINT}
+  </select>
+
+  <select id="selectByStatusAndExecuteTime" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from delay_task
+    where
+    status = #{oldStatus,jdbcType=INTEGER}
+    and
+    sharding_id = #{shardingId,jdbcType=TINYINT}
+    and
+    execute_time between #{executeTimeBegin,jdbcType=BIGINT} and #{executeTimeEnd,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByStatusForUpdate" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from delay_task
+    where
+    status = #{status,jdbcType=INTEGER}
+    for update
+  </select>
+
+  <select id="selectByStatusAndShardingId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from delay_task
+    where
+    status = #{status,jdbcType=INTEGER}
+    and
+    sharding_id = #{shardingId,jdbcType=TINYINT}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from delay_task
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cjyfff.dq.task.model.DelayTask" keyProperty="id" useGeneratedKeys="true">
+    insert into delay_task (id, task_id, function_name, 
+      params, status, delay_time, execute_time, retry_interval, retry_time,
+      retry_count, already_retry_count, sharding_id, created_at,
+      modified_at)
+    values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=VARCHAR}, #{functionName,jdbcType=VARCHAR}, 
+      #{params,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{delayTime,jdbcType=BIGINT}, #{executeTime,jdbcType=BIGINT},
+      #{retryInterval,jdbcType=INTEGER}, #{retryTime,jdbcType=BIGINT},
+      #{retryCount,jdbcType=TINYINT}, #{alreadyRetryCount,jdbcType=TINYINT}, #{shardingId,jdbcType=TINYINT}, #{createdAt,jdbcType=TIMESTAMP},
+      #{modifiedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cjyfff.dq.task.model.DelayTask" keyProperty="id" useGeneratedKeys="true">
+    insert into delay_task
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="taskId != null">
+        task_id,
+      </if>
+      <if test="functionName != null">
+        function_name,
+      </if>
+      <if test="params != null">
+        params,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="delayTime != null">
+        delay_time,
+      </if>
+      <if test="executeTime != null">
+        execute_time,
+      </if>
+      <if test="retryInterval != null">
+        retry_interval,
+      </if>
+      <if test="retryTime != null">
+        retry_time,
+      </if>
+      <if test="retryCount != null">
+        retry_count,
+      </if>
+      <if test="alreadyRetryCount != null">
+        already_retry_count,
+      </if>
+      <if test="shardingId != null">
+        sharding_id,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+      <if test="modifiedAt != null">
+        modified_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="taskId != null">
+        #{taskId,jdbcType=VARCHAR},
+      </if>
+      <if test="functionName != null">
+        #{functionName,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null">
+        #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="delayTime != null">
+        #{delayTime,jdbcType=BIGINT},
+      </if>
+      <if test="executeTime != null">
+        #{executeTime,jdbcType=BIGINT},
+      </if>
+      <if test="retryInterval != null">
+        #{retryInterval,jdbcType=INTEGER},
+      </if>
+      <if test="retryTime != null">
+        #{retryTime,jdbcType=BIGINT},
+      </if>
+      <if test="retryCount != null">
+        #{retryCount,jdbcType=TINYINT},
+      </if>
+      <if test="alreadyRetryCount != null">
+        #{alreadyRetryCount,jdbcType=TINYINT},
+      </if>
+      <if test="shardingId != null">
+        #{shardingId,jdbcType=TINYINT},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifiedAt != null">
+        #{modifiedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cjyfff.dq.task.model.DelayTask">
+    update delay_task
+    <set>
+      <if test="taskId != null">
+        task_id = #{taskId,jdbcType=VARCHAR},
+      </if>
+      <if test="functionName != null">
+        function_name = #{functionName,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null">
+        params = #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="delayTime != null">
+        delay_time = #{delayTime,jdbcType=BIGINT},
+      </if>
+      <if test="executeTime != null">
+        execute_time = #{executeTime,jdbcType=BIGINT},
+      </if>
+      <if test="retryInterval != null">
+        retry_interval = #{retryInterval,jdbcType=INTEGER},
+      </if>
+      <if test="retryTime != null">
+        retry_time = #{retryTime,jdbcType=BIGINT},
+      </if>
+      <if test="retryCount != null">
+        retry_count = #{retryCount,jdbcType=TINYINT},
+      </if>
+      <if test="alreadyRetryCount != null">
+        already_retry_count = #{alreadyRetryCount,jdbcType=TINYINT},
+      </if>
+      <if test="shardingId != null">
+        sharding_id = #{shardingId,jdbcType=TINYINT},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifiedAt != null">
+        modified_at = #{modifiedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateStatusByTaskIdAndOldStatus">
+    update delay_task
+    set
+    status = #{newStatus,jdbcType=INTEGER},
+    modified_at = now()
+    where
+    task_id = #{taskId,jdbcType=VARCHAR}
+    and
+    sharding_id = #{shardingId,jdbcType=TINYINT}
+    and
+    status = #{oldStatus,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.cjyfff.dq.task.model.DelayTask">
+    update delay_task
+    set task_id = #{taskId,jdbcType=VARCHAR},
+      function_name = #{functionName,jdbcType=VARCHAR},
+      params = #{params,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      delay_time = #{delayTime,jdbcType=BIGINT},
+      execute_time = #{executeTime,jdbcType=BIGINT},
+      retry_interval = #{retryInterval,jdbcType=INTEGER},
+      retry_time = #{retryTime,jdbcType=BIGINT},
+      retry_count = #{retryCount,jdbcType=TINYINT},
+      already_retry_count = #{alreadyRetryCount,jdbcType=TINYINT},
+      sharding_id = #{shardingId,jdbcType=TINYINT},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      modified_at = #{modifiedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
