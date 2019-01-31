@@ -1,11 +1,10 @@
 package com.cjyfff.dq.task.transport.action;
 
-import java.util.Date;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
+import com.cjyfff.dq.task.transport.protocol.Packet;
 import com.cjyfff.election.core.info.ShardingInfo;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
@@ -37,7 +36,7 @@ public class TransportAction {
     private int transportPort;
 
 
-    public void connect() {
+    public void connectAllNodes() {
 
         int shardingSize = shardingInfo.getShardingMap().size();
         if (shardingSize <= 1) {
@@ -72,9 +71,18 @@ public class TransportAction {
 
     }
 
-    public void disconnect() {}
+    public void disconnectAllNodes() throws Exception {
+        int shardingSize = shardingInfo.getShardingMap().size();
+        if (shardingSize <= 1) {
+            return;
+        }
 
-    public void sendMsg() {}
+        for (Entry<Byte, OneNodeChannelInfo> info : NodeChannelInfo.channelInfoMap.entrySet()) {
+            info.getValue().getChannel().closeFuture().sync();
+        }
+    }
+
+    public void sendMsg(Byte nodeId, Packet packet) {}
 
     private void createServer() {
         NioEventLoopGroup boosGroup = new NioEventLoopGroup();
