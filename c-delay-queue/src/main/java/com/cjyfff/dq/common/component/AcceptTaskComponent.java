@@ -49,7 +49,7 @@ public class AcceptTaskComponent {
      * @return
      */
     public Integer getShardingIdByTaskId(String taskId) {
-        Map<Integer, String> shardingMap = shardingInfo.getShardingMap();
+        Map<Byte, String> shardingMap = shardingInfo.getShardingMap();
 
         // 分片数量
         int shardingAmount = shardingMap.size();
