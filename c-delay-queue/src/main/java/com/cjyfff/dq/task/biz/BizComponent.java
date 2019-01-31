@@ -22,9 +22,6 @@ public class BizComponent {
     private DelayTaskMapper delayTaskMapper;
 
     @Autowired
-    private ShardingInfo shardingInfo;
-
-    @Autowired
     private AcceptTaskComponent acceptTaskComponent;
 
     @Autowired
@@ -32,7 +29,7 @@ public class BizComponent {
 
     void rePushTaskToQueue() {
         List<DelayTask> myDelayTaskList = delayTaskMapper.selectByStatusAndShardingId(
-            TaskStatus.IN_QUEUE.getStatus(), shardingInfo.getNodeId());
+            TaskStatus.IN_QUEUE.getStatus(), ShardingInfo.getNodeId());
 
         for (DelayTask delayTask : myDelayTaskList) {
             QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());

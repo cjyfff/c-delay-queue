@@ -32,9 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PublicMsgServiceImpl implements PublicMsgService {
 
     @Autowired
-    private ShardingInfo shardingInfo;
-
-    @Autowired
     private AcceptTaskComponent acceptTaskComponent;
 
     @Autowired
@@ -88,8 +85,8 @@ public class PublicMsgServiceImpl implements PublicMsgService {
         } else {
             // 转发到对应机器
             try {
-                Integer targetShardingId = acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId());
-                String targetHost = shardingInfo.getShardingMap().get(targetShardingId);
+                Byte targetShardingId = acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId());
+                String targetHost = ShardingInfo.getShardingMap().get(targetShardingId);
 
                 if (targetHost == null) {
                     throw new ApiException(ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_CODE,
@@ -122,7 +119,7 @@ public class PublicMsgServiceImpl implements PublicMsgService {
     }
 
     private void sendInnerTaskMsg(String url, InnerMsgDto innerMsgDto,
-                                 Integer targetShardingId, String targetHost) throws Exception {
+                                 Byte targetShardingId, String targetHost) throws Exception {
         String resultJson = HttpUtils.doPost(url, JSON.toJSONString(innerMsgDto));
 
         log.info(String.format("Send inner task msg to node id :%s, host: %s, resp is %s",

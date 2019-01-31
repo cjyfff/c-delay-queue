@@ -17,9 +17,6 @@ public class ExecLogComponent {
     @Autowired
     private DelayQueueExecLogMapper delayQueueExecLogMapper;
 
-    @Autowired
-    private ShardingInfo shardingInfo;
-
     /**
      * 插入 delay task 操作日志，任何对 delay task 的状态修改都要插入一条记录
      * @param delayTask
@@ -30,7 +27,7 @@ public class ExecLogComponent {
         DelayQueueExecLog delayQueueExecLog = new DelayQueueExecLog();
         delayQueueExecLog.setTaskId(delayTask.getTaskId());
         delayQueueExecLog.setStatus(taskStatus);
-        delayQueueExecLog.setSharding(shardingInfo.getNodeId());
+        delayQueueExecLog.setSharding(ShardingInfo.getNodeId());
         delayQueueExecLog.setFunctionName(delayTask.getFunctionName());
         delayQueueExecLog.setParams(delayTask.getParams());
         delayQueueExecLog.setMsg(msg);
