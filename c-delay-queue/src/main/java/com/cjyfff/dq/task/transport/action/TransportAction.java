@@ -1,12 +1,20 @@
 package com.cjyfff.dq.task.transport.action;
 
+import java.util.Date;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
+import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
+import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
 import com.cjyfff.election.core.info.ShardingInfo;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +51,10 @@ public class TransportAction {
 
             if (info.getKey() < myNodeId) {
                 // 连接其他节点netty服务
+                String serverHost = info.getValue().split(":")[0];
+                int serverIp = 9999;
+                connectServer(info.getKey(), serverHost, serverIp);
+
             } else if (info.getKey().equals(myNodeId)) {
 
                 // 节点是最后一个节点时不需要创建server
@@ -88,6 +100,37 @@ public class TransportAction {
                 log.info("Success to create netty server on %s port", transportPort);
             } else {
                 log.info("Fail to create netty server on %s port", transportPort);
+            }
+        });
+    }
+
+    private void connectServer(Byte serverNodeId, String serverHost, int serverIp) {
+        NioEventLoopGroup workerGroup = new NioEventLoopGroup();
+
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap
+            .group(workerGroup)
+            .channel(NioSocketChannel.class)
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+            .option(ChannelOption.SO_KEEPALIVE, true)
+            .option(ChannelOption.TCP_NODELAY, true)
+            .handler(new ChannelInitializer<SocketChannel>() {
+                @Override
+                public void initChannel(SocketChannel ch) {
+                    ch.pipeline().addLast(new ClientHandler());
+                }
+            });
+
+        bootstrap.connect(serverHost, serverIp).addListener(future -> {
+            if (future.isSuccess()) {
+
+                Channel channel = ((ChannelFuture) future).channel();
+
+                NodeChannelInfo.channelInfoMap.put(serverNodeId, new OneNodeChannelInfo(channel, false));
+
+                log.info("Success to connect server %s", serverHost);
+            } else {
+                log.error("Fail to connect server %s", serverHost);
             }
         });
     }
