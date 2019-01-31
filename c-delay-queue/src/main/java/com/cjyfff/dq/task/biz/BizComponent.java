@@ -32,8 +32,7 @@ public class BizComponent {
 
     void rePushTaskToQueue() {
         List<DelayTask> myDelayTaskList = delayTaskMapper.selectByStatusAndShardingId(
-            TaskStatus.IN_QUEUE.getStatus(),
-            shardingInfo.getNodeId().byteValue());
+            TaskStatus.IN_QUEUE.getStatus(), shardingInfo.getNodeId());
 
         for (DelayTask delayTask : myDelayTaskList) {
             QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());

@@ -30,7 +30,7 @@ public class ExecLogComponent {
         DelayQueueExecLog delayQueueExecLog = new DelayQueueExecLog();
         delayQueueExecLog.setTaskId(delayTask.getTaskId());
         delayQueueExecLog.setStatus(taskStatus);
-        delayQueueExecLog.setSharding(shardingInfo.getNodeId().byteValue());
+        delayQueueExecLog.setSharding(shardingInfo.getNodeId());
         delayQueueExecLog.setFunctionName(delayTask.getFunctionName());
         delayQueueExecLog.setParams(delayTask.getParams());
         delayQueueExecLog.setMsg(msg);

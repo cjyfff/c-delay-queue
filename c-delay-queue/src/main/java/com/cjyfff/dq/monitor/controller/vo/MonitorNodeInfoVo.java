@@ -12,9 +12,9 @@ import lombok.Setter;
 @Setter
 public class MonitorNodeInfoVo {
 
-    private Map<Integer, String> shardingMap;
+    private Map<Byte, String> shardingMap;
 
-    private Integer nodeId;
+    private Byte nodeId;
 
     private Integer electionStatus;
 
