@@ -3,6 +3,8 @@ package com.cjyfff.dq.task.transport.action;
 import java.nio.charset.Charset;
 import java.util.Date;
 
+import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
+import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -19,6 +21,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         ByteBuf byteBuf = (ByteBuf) msg;
 
         log.info(new Date() + ": 服务端读到数据 -> " + byteBuf.toString(Charset.forName("utf-8")));
+
+        Byte clientNodeId = Byte.valueOf(byteBuf.toString());
+        if (! NodeChannelInfo.channelInfoMap.containsKey(clientNodeId)) {
+            NodeChannelInfo.channelInfoMap.put(clientNodeId, new OneNodeChannelInfo(ctx.channel(), false));
+        }
 
         byte[] bytes = "连接成功".getBytes(Charset.forName("utf-8"));
 

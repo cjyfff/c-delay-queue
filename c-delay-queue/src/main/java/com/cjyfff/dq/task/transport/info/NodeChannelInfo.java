@@ -2,6 +2,7 @@ package com.cjyfff.dq.task.transport.info;
 
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +17,12 @@ public class NodeChannelInfo {
     @Getter
     @Setter
     public static class OneNodeChannelInfo {
-        private Object channel;
+        public OneNodeChannelInfo(Channel channel, boolean server) {
+            this.channel = channel;
+            this.server = server;
+        }
+
+        private Channel channel;
 
         private boolean server;
     }

@@ -9,4 +9,6 @@ public abstract class Packet {
     private Byte version = BaseTransportConf.DEFAULT_PACKET_VERSION;
 
     private Byte type;
+
+    private Byte nodeId;
 }

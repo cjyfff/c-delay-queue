@@ -24,6 +24,7 @@ public class TransportAction {
     @Autowired
     private ShardingInfo shardingInfo;
 
+    // todo: 需要更换为l_election.specified_port
     @Value("${transport.port}")
     private int transportPort;
 
@@ -60,6 +61,8 @@ public class TransportAction {
     }
 
     public void disconnect() {}
+
+    public void sendMsg() {}
 
     private void createServer() {
         NioEventLoopGroup boosGroup = new NioEventLoopGroup();
