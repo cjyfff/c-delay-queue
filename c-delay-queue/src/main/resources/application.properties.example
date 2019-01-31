@@ -1,5 +1,8 @@
 server.port=8888
 
+# 节点间通信ip
+transport.port=9999
+
 # 指定本机服务端口，一般与`server.port`一致
 l_election.specified_port=8888
 # 指定本机ip，不指定的话将自动检测，自动检测时假如本机拥有多个ip可能会获取到错误的ip
