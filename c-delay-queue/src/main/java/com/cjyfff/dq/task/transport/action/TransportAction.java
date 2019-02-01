@@ -28,25 +28,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class TransportAction {
 
-    @Autowired
-    private ShardingInfo shardingInfo;
-
     // todo: 需要更换为l_election.specified_port
     @Value("${transport.port}")
     private int transportPort;
 
-
     public void connectAllNodes() {
 
-        int shardingSize = shardingInfo.getShardingMap().size();
+        int shardingSize = ShardingInfo.getShardingMap().size();
         if (shardingSize <= 1) {
             return;
         }
 
-        Byte myNodeId = shardingInfo.getNodeId();
+        Byte myNodeId = ShardingInfo.getNodeId();
 
         int i = 0;
-        for (Entry<Byte, String> info : shardingInfo.getShardingMap().entrySet()) {
+        for (Entry<Byte, String> info : ShardingInfo.getShardingMap().entrySet()) {
 
             if (info.getKey() < myNodeId) {
                 // 连接其他节点netty服务
@@ -72,7 +68,7 @@ public class TransportAction {
     }
 
     public void disconnectAllNodes() throws Exception {
-        int shardingSize = shardingInfo.getShardingMap().size();
+        int shardingSize = ShardingInfo.getShardingMap().size();
         if (shardingSize <= 1) {
             return;
         }
@@ -98,7 +94,7 @@ public class TransportAction {
             .childHandler(new ChannelInitializer<NioSocketChannel>() {
                 @Override
                 protected void initChannel(NioSocketChannel ch) {
-                    ch.pipeline().addLast(new ServerHandler());
+                    ch.pipeline().addLast(ServerHandler.INSTANCE);
                 }
             });
 
@@ -125,7 +121,7 @@ public class TransportAction {
             .handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) {
-                    ch.pipeline().addLast(new ClientHandler());
+                    ch.pipeline().addLast(ClientHandler.INSTANCE);
                 }
             });
 
