@@ -94,16 +94,18 @@ public class TransportAction {
             .childHandler(new ChannelInitializer<NioSocketChannel>() {
                 @Override
                 protected void initChannel(NioSocketChannel ch) {
-                    ch.pipeline().addLast(ServerHandler.INSTANCE);
+                    ch.pipeline()
+                        .addLast(new PacketDecoder())
+                        .addLast(new ServerTransportTaskHandler());
                 }
             });
 
 
         serverBootstrap.bind(transportPort).addListener(future -> {
             if (future.isSuccess()) {
-                log.info("Success to create netty server on %s port", transportPort);
+                log.info("Success to create netty server on {} port", transportPort);
             } else {
-                log.info("Fail to create netty server on %s port", transportPort);
+                log.info("Fail to create netty server on {} port", transportPort);
             }
         });
     }
@@ -132,9 +134,9 @@ public class TransportAction {
 
                 NodeChannelInfo.channelInfoMap.put(serverNodeId, new OneNodeChannelInfo(channel, false));
 
-                log.info("Success to connect server %s", serverHost);
+                log.info("Success to connect server {}", serverHost);
             } else {
-                log.error("Fail to connect server %s", serverHost);
+                log.error("Fail to connect server {}", serverHost);
             }
         });
     }
