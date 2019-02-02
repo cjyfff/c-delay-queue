@@ -5,6 +5,9 @@ import java.util.Date;
 
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
+import com.cjyfff.dq.task.transport.protocol.PacketCoder;
+import com.cjyfff.dq.task.transport.protocol.PacketType;
+import com.cjyfff.dq.task.transport.protocol.TaskTransportPacket;
 import com.cjyfff.election.core.info.ShardingInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -25,11 +28,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) {
         log.info(new Date() + ": 客户端写出数据");
 
-        byte[] bytes = ShardingInfo.getNodeId().toString().getBytes(Charset.forName("utf-8"));
+        TaskTransportPacket packet = new TaskTransportPacket();
+        packet.setTaskId("asd1");
+        packet.setType(PacketType.TASK_TRANSPORT);
 
-        ByteBuf buffer = ctx.alloc().buffer();
 
-        buffer.writeBytes(bytes);
+        ByteBuf buffer = PacketCoder.INSTANT.encode(packet);
 
         ctx.channel().writeAndFlush(buffer);
     }

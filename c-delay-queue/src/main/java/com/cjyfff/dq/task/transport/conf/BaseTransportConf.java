@@ -13,5 +13,5 @@ public class BaseTransportConf {
     /**
      * 协议识别码
      */
-    private static final int P_ID_NUMBER = 0x88888888;
+    public static final int P_ID_NUMBER = 0x88888888;
 }

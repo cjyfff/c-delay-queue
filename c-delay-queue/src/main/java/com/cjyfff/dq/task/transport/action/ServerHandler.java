@@ -5,6 +5,9 @@ import java.util.Date;
 
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
+import com.cjyfff.dq.task.transport.protocol.Packet;
+import com.cjyfff.dq.task.transport.protocol.PacketCoder;
+import com.cjyfff.dq.task.transport.protocol.TaskTransportPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -24,12 +27,20 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         ByteBuf byteBuf = (ByteBuf) msg;
 
-        log.info(new Date() + ": 服务端读到数据 -> " + byteBuf.toString(Charset.forName("utf-8")));
+        log.info(new Date() + ": 服务端读到数据");
 
-        Byte clientNodeId = Byte.valueOf(byteBuf.toString(Charset.forName("utf-8")));
+        Packet packet = PacketCoder.INSTANT.decode(byteBuf);
+
+        if (packet == null) {
+            return;
+        }
+
+        Byte clientNodeId = packet.getNodeId();
         if (! NodeChannelInfo.channelInfoMap.containsKey(clientNodeId)) {
             NodeChannelInfo.channelInfoMap.put(clientNodeId, new OneNodeChannelInfo(ctx.channel(), false));
         }
+
+        log.info("task id:" + ((TaskTransportPacket)packet).getTaskId());
 
         byte[] bytes = "连接成功".getBytes(Charset.forName("utf-8"));
 
