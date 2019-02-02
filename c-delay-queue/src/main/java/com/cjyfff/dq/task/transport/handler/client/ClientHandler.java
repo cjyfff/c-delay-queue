@@ -5,6 +5,7 @@ import java.util.Date;
 import com.cjyfff.dq.task.transport.protocol.PacketCoder;
 import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
+import com.cjyfff.election.core.info.ShardingInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -26,8 +27,9 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
         TaskTransportReqPacket packet = new TaskTransportReqPacket();
         packet.setTaskId("asd1");
-        packet.setType(PacketType.TASK_TRANSPORT_REQ);
 
+        packet.setNodeId(ShardingInfo.getNodeId());
+        packet.setType(PacketType.TASK_TRANSPORT_REQ);
 
         ByteBuf buffer = PacketCoder.INSTANCE.encode(packet);
 
