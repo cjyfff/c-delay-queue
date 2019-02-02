@@ -6,6 +6,7 @@ import java.util.Date;
 import com.cjyfff.dq.task.transport.protocol.PacketCoder;
 import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
+import com.cjyfff.election.core.info.ShardingInfo;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
