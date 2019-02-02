@@ -30,6 +30,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
         TaskTransportPacket packet = new TaskTransportPacket();
         packet.setTaskId("asd1");
+        packet.setNodeId(ShardingInfo.getNodeId());
         packet.setType(PacketType.TASK_TRANSPORT);
 
 
