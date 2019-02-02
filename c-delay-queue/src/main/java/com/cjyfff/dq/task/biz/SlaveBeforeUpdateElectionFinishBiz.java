@@ -1,5 +1,6 @@
 package com.cjyfff.dq.task.biz;
 
+import com.cjyfff.dq.task.transport.action.TransportAction;
 import com.cjyfff.election.biz.NoneBiz;
 import com.cjyfff.dq.common.component.AcceptTaskComponent;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,9 @@ public class SlaveBeforeUpdateElectionFinishBiz extends NoneBiz{
     @Autowired
     private BizComponent bizComponent;
 
+    @Autowired
+    private TransportAction transportAction;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void run() {
@@ -29,6 +33,8 @@ public class SlaveBeforeUpdateElectionFinishBiz extends NoneBiz{
         acceptTaskComponent.clearQueue();
 
         bizComponent.rePushTaskToQueue();
+
+        transportAction.connectAllNodes();
 
         log.info("SlaveBeforeUpdateElectionFinishBiz end...");
     }
