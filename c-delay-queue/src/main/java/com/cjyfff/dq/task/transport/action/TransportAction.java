@@ -2,6 +2,11 @@ package com.cjyfff.dq.task.transport.action;
 
 import java.util.Map.Entry;
 
+import com.cjyfff.dq.task.transport.handler.PacketEncoder;
+import com.cjyfff.dq.task.transport.handler.client.ClientHandler;
+import com.cjyfff.dq.task.transport.handler.PacketDecoder;
+import com.cjyfff.dq.task.transport.handler.client.ClientTransportTaskHandler;
+import com.cjyfff.dq.task.transport.handler.server.ServerTransportTaskHandler;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
 import com.cjyfff.dq.task.transport.protocol.Packet;
@@ -17,7 +22,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -95,8 +99,9 @@ public class TransportAction {
                 @Override
                 protected void initChannel(NioSocketChannel ch) {
                     ch.pipeline()
-                        .addLast(new PacketDecoder())
-                        .addLast(new ServerTransportTaskHandler());
+                        .addLast(PacketDecoder.INSTANCE)
+                        .addLast(ServerTransportTaskHandler.INSTANCE)
+                        .addLast(PacketEncoder.INSTANCE);
                 }
             });
 
@@ -123,7 +128,11 @@ public class TransportAction {
             .handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) {
-                    ch.pipeline().addLast(ClientHandler.INSTANCE);
+                    ch.pipeline()
+                        .addLast(PacketDecoder.INSTANCE)
+                        .addLast(ClientHandler.INSTANCE)
+                        .addLast(ClientTransportTaskHandler.INSTANCE)
+                        .addLast(PacketEncoder.INSTANCE);
                 }
             });
 

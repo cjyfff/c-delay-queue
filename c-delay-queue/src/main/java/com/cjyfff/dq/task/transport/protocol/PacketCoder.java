@@ -14,17 +14,31 @@ import io.netty.buffer.ByteBufAllocator;
  */
 public class PacketCoder {
 
-    public static final PacketCoder INSTANT = new PacketCoder();
+    public static final PacketCoder INSTANCE = new PacketCoder();
 
     private final static Map<Byte, Class<? extends Packet>> PACKET_TYPE_CLASS_MAP =
         new HashMap<Byte, Class<? extends Packet>>() {
             {
-                put(Byte.valueOf("1"), TaskTransportReqPacket.class);
+                put(PacketType.TASK_TRANSPORT_REQ, TaskTransportReqPacket.class);
+                put(PacketType.TASK_TRANSPORT_RESP, TaskTransportRespPacket.class);
             }
         };
 
     public ByteBuf encode(Packet packet) {
         ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
+        byte[] bytes = JSON.toJSONBytes(packet);
+
+        byteBuf.writeInt(BaseTransportConf.P_ID_NUMBER);
+        byteBuf.writeByte(BaseTransportConf.DEFAULT_PACKET_VERSION);
+        byteBuf.writeByte(packet.getType());
+        byteBuf.writeInt(bytes.length);
+        byteBuf.writeBytes(bytes);
+
+        return byteBuf;
+    }
+
+    public ByteBuf encode(ByteBuf byteBuf, Packet packet) {
+
         byte[] bytes = JSON.toJSONBytes(packet);
 
         byteBuf.writeInt(BaseTransportConf.P_ID_NUMBER);

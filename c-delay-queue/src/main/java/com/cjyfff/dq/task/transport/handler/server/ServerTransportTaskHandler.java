@@ -1,9 +1,12 @@
-package com.cjyfff.dq.task.transport.action;
+package com.cjyfff.dq.task.transport.handler.server;
 
 import java.nio.charset.Charset;
 
+import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
+import com.cjyfff.dq.task.transport.protocol.TaskTransportRespPacket;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -12,20 +15,21 @@ import lombok.extern.slf4j.Slf4j;
  * Created by jiashen on 19-2-2.
  */
 @Slf4j
+@Sharable
 public class ServerTransportTaskHandler extends SimpleChannelInboundHandler<TaskTransportReqPacket> {
+
+    public static final ServerTransportTaskHandler INSTANCE = new ServerTransportTaskHandler();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TaskTransportReqPacket taskTransportReqPacket) {
         log.info("task id:" + taskTransportReqPacket.getTaskId());
 
-        byte[] bytes = "连接成功".getBytes(Charset.forName("utf-8"));
+        log.info("服务端发送消息");
 
-        ByteBuf buffer = ctx.alloc().buffer();
+        TaskTransportRespPacket respPacket = new TaskTransportRespPacket();
+        respPacket.setResult("success");
+        respPacket.setType(PacketType.TASK_TRANSPORT_RESP);
 
-        buffer.writeBytes(bytes);
-
-        log.info("服务端发送消息: " + new String(bytes));
-
-        ctx.channel().writeAndFlush(buffer);
+        ctx.channel().writeAndFlush(respPacket);
     }
 }
