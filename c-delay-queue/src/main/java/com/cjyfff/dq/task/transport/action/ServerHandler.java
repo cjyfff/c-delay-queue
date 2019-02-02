@@ -26,7 +26,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
         log.info(new Date() + ": 服务端读到数据 -> " + byteBuf.toString(Charset.forName("utf-8")));
 
-        Byte clientNodeId = Byte.valueOf(byteBuf.toString());
+        Byte clientNodeId = Byte.valueOf(byteBuf.toString(Charset.forName("utf-8")));
         if (! NodeChannelInfo.channelInfoMap.containsKey(clientNodeId)) {
             NodeChannelInfo.channelInfoMap.put(clientNodeId, new OneNodeChannelInfo(ctx.channel(), false));
         }
@@ -36,6 +36,9 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         ByteBuf buffer = ctx.alloc().buffer();
 
         buffer.writeBytes(bytes);
+
+        log.info("服务端发送消息: " + new String(bytes));
+
         ctx.channel().writeAndFlush(buffer);
     }
 }
