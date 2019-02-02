@@ -95,7 +95,7 @@ public class PublicMsgServiceImpl implements PublicMsgService {
                 }
 
                 String url = String.format("http://%s/dq/acceptInnerMsg", targetHost);
-                String nonceStr = UUID.randomUUID().toString();
+                String nonceStr = UUID.randomUUID().toString().replace("-", "");
                 InnerMsgDto innerMsgDto = new InnerMsgDto();
 
                 BeanUtils.copyProperties(reqDto, innerMsgDto);
