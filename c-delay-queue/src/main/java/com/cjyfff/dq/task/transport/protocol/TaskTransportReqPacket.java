@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class TaskTransportPacket extends Packet {
+public class TaskTransportReqPacket extends Packet {
     /**
      * taskId，需要保证唯一
      */

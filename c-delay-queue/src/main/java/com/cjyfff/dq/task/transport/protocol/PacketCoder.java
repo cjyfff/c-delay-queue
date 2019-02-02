@@ -19,7 +19,7 @@ public class PacketCoder {
     private final static Map<Byte, Class<? extends Packet>> PACKET_TYPE_CLASS_MAP =
         new HashMap<Byte, Class<? extends Packet>>() {
             {
-                put(Byte.valueOf("1"), TaskTransportPacket.class);
+                put(Byte.valueOf("1"), TaskTransportReqPacket.class);
             }
         };
 

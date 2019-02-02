@@ -7,7 +7,7 @@ import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
 import com.cjyfff.dq.task.transport.protocol.Packet;
 import com.cjyfff.dq.task.transport.protocol.PacketCoder;
-import com.cjyfff.dq.task.transport.protocol.TaskTransportPacket;
+import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -40,7 +40,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             NodeChannelInfo.channelInfoMap.put(clientNodeId, new OneNodeChannelInfo(ctx.channel(), false));
         }
 
-        log.info("task id:" + ((TaskTransportPacket)packet).getTaskId());
+        log.info("task id:" + ((TaskTransportReqPacket)packet).getTaskId());
 
         byte[] bytes = "连接成功".getBytes(Charset.forName("utf-8"));
 
