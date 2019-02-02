@@ -19,6 +19,6 @@ public class ClientTransportTaskHandler extends SimpleChannelInboundHandler<Task
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TaskTransportRespPacket respPacket) {
-        log.info(new Date() + ": 客户端读到数据 -> " + respPacket.getMsg());
+        log.info(new Date() + ": 客户端读到数据 -> " + respPacket.getResult());
     }
 }

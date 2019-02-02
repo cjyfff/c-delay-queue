@@ -99,9 +99,9 @@ public class TransportAction {
                 @Override
                 protected void initChannel(NioSocketChannel ch) {
                     ch.pipeline()
-                        .addLast(PacketDecoder.INSTANCE)
+                        .addLast(new PacketDecoder())
                         .addLast(ServerTransportTaskHandler.INSTANCE)
-                        .addLast(PacketEncoder.INSTANCE);
+                        .addLast(new PacketEncoder());
                 }
             });
 
@@ -129,10 +129,10 @@ public class TransportAction {
                 @Override
                 public void initChannel(SocketChannel ch) {
                     ch.pipeline()
-                        .addLast(PacketDecoder.INSTANCE)
+                        .addLast(new PacketDecoder())
                         .addLast(ClientHandler.INSTANCE)
                         .addLast(ClientTransportTaskHandler.INSTANCE)
-                        .addLast(PacketEncoder.INSTANCE);
+                        .addLast(new PacketEncoder());
                 }
             });
 

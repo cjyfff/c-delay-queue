@@ -11,10 +11,8 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 /**
  * Created by jiashen on 19-2-2.
  */
-@Sharable
 public class PacketDecoder extends ByteToMessageDecoder {
 
-    public static final PacketDecoder INSTANCE = new PacketDecoder();
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List out) {
