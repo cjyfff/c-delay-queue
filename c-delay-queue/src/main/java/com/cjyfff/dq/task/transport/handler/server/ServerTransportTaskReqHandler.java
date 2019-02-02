@@ -13,9 +13,9 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Sharable
-public class ServerTransportTaskHandler extends SimpleChannelInboundHandler<TaskTransportReqPacket> {
+public class ServerTransportTaskReqHandler extends SimpleChannelInboundHandler<TaskTransportReqPacket> {
 
-    public static final ServerTransportTaskHandler INSTANCE = new ServerTransportTaskHandler();
+    public static final ServerTransportTaskReqHandler INSTANCE = new ServerTransportTaskReqHandler();
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TaskTransportReqPacket taskTransportReqPacket) {

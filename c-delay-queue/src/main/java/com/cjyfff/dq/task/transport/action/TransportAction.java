@@ -5,8 +5,8 @@ import java.util.Map.Entry;
 import com.cjyfff.dq.task.transport.handler.PacketEncoder;
 import com.cjyfff.dq.task.transport.handler.client.ClientHandler;
 import com.cjyfff.dq.task.transport.handler.PacketDecoder;
-import com.cjyfff.dq.task.transport.handler.client.ClientTransportTaskHandler;
-import com.cjyfff.dq.task.transport.handler.server.ServerTransportTaskHandler;
+import com.cjyfff.dq.task.transport.handler.client.ClientTransportTaskRespHandler;
+import com.cjyfff.dq.task.transport.handler.server.ServerTransportTaskReqHandler;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
 import com.cjyfff.dq.task.transport.protocol.Packet;
@@ -102,7 +102,7 @@ public class TransportAction {
                     ch.pipeline()
                         .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 6, 4))
                         .addLast(new PacketDecoder())
-                        .addLast(ServerTransportTaskHandler.INSTANCE)
+                        .addLast(ServerTransportTaskReqHandler.INSTANCE)
                         .addLast(new PacketEncoder());
                 }
             });
@@ -134,7 +134,7 @@ public class TransportAction {
                         .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 6, 4))
                         .addLast(new PacketDecoder())
                         .addLast(ClientHandler.INSTANCE)
-                        .addLast(ClientTransportTaskHandler.INSTANCE)
+                        .addLast(ClientTransportTaskRespHandler.INSTANCE)
                         .addLast(new PacketEncoder());
                 }
             });
