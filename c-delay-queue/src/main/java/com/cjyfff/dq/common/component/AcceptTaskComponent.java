@@ -22,12 +22,6 @@ import org.springframework.stereotype.Component;
 public class AcceptTaskComponent {
 
     @Autowired
-    private ElectionStatus electionStatus;
-
-    @Autowired
-    private ShardingInfo shardingInfo;
-
-    @Autowired
     private DelayTaskQueue delayTaskQueue;
 
     @Value("${delay_queue.critical_polling_time}")
@@ -38,7 +32,7 @@ public class AcceptTaskComponent {
      * @throws ApiException
      */
     public void checkElectionStatus() throws ApiException {
-        if (! ElectionStatusType.FINISH.equals(electionStatus.getElectionStatus())) {
+        if (! ElectionStatusType.FINISH.equals(ElectionStatus.getElectionStatus())) {
             throw new ApiException(ErrorCodeMsg.ELECTION_NOT_FINISHED_CODE, ErrorCodeMsg.ELECTION_NOT_FINISHED_MSG);
         }
     }
@@ -48,14 +42,14 @@ public class AcceptTaskComponent {
      * @param taskId
      * @return
      */
-    public Integer getShardingIdByTaskId(String taskId) {
-        Map<Byte, String> shardingMap = shardingInfo.getShardingMap();
+    public Byte getShardingIdByTaskId(String taskId) {
+        Map<Byte, String> shardingMap = ShardingInfo.getShardingMap();
 
         // 分片数量
         int shardingAmount = shardingMap.size();
 
         // hashCode有可能是负数，需要处理一下
-        return (taskId.hashCode() & 0x7FFFFFFF) % shardingAmount;
+        return Integer.valueOf((taskId.hashCode() & 0x7FFFFFFF) % shardingAmount).byteValue();
     }
 
     /**
@@ -64,7 +58,7 @@ public class AcceptTaskComponent {
      * @return
      */
     public boolean checkIsMyTask(String taskId) {
-        return getShardingIdByTaskId(taskId).equals(shardingInfo.getNodeId());
+        return getShardingIdByTaskId(taskId).equals(ShardingInfo.getNodeId());
     }
 
     /**

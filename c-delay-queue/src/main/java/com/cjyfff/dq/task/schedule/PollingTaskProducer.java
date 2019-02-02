@@ -31,12 +31,6 @@ public class PollingTaskProducer {
     private DelayTaskMapper delayTaskMapper;
 
     @Autowired
-    private ShardingInfo shardingInfo;
-
-    @Autowired
-    private ElectionStatus electionStatus;
-
-    @Autowired
     private AcceptTaskComponent acceptTaskComponent;
 
     @Autowired
@@ -50,7 +44,7 @@ public class PollingTaskProducer {
     public void run() throws Exception {
         log.info("begin PollingTaskProducer ------");
 
-        if (! ElectionStatusType.FINISH.equals(electionStatus.getElectionStatus())) {
+        if (! ElectionStatusType.FINISH.equals(ElectionStatus.getElectionStatus())) {
             log.warn("Election not finish, PollingTaskProducer can not process...");
             return;
         }
@@ -62,7 +56,7 @@ public class PollingTaskProducer {
         // 所以也不会出现这种可能。
         // 因此这里的数据查询不用加锁。
         List<DelayTask> taskList = delayTaskMapper.selectByStatusAndExecuteTime(TaskStatus.POLLING.getStatus(),
-            shardingInfo.getNodeId(), 0L, nowSecond + pollingTime);
+            ShardingInfo.getNodeId(), 0L, nowSecond + pollingTime);
 
         for (DelayTask delayTask : taskList) {
             QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());
