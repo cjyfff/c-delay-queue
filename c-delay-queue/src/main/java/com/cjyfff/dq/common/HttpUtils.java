@@ -56,11 +56,13 @@ public class HttpUtils {
 
             PoolingHttpClientConnectionManager pcm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
             pcm.setMaxTotal(100);
-            pcm.setDefaultMaxPerRoute(20);
+            // 每个路由（ip加port）的最大连接数
+            pcm.setDefaultMaxPerRoute(30);
 
             requestConfig = RequestConfig.custom().setConnectionRequestTimeout(10000)
                 .setSocketTimeout(10000).setConnectTimeout(10000).build();
 
+            // 默认的keep alive time out为无限，有可能导致连接无法回收，因此要设置一个默认时间
             ConnectionKeepAliveStrategy keepAliveStrategy = (response, context) -> {
                 HeaderElementIterator it = new BasicHeaderElementIterator
                     (response.headerIterator(HTTP.CONN_KEEP_ALIVE));
