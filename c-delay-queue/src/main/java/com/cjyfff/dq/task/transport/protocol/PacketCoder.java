@@ -25,19 +25,6 @@ public class PacketCoder {
             }
         };
 
-    public ByteBuf encode(Packet packet) {
-        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer();
-        byte[] bytes = JSON.toJSONBytes(packet);
-
-        byteBuf.writeInt(BaseTransportConf.P_ID_NUMBER);
-        byteBuf.writeByte(BaseTransportConf.DEFAULT_PACKET_VERSION);
-        byteBuf.writeByte(packet.getType());
-        byteBuf.writeInt(bytes.length);
-        byteBuf.writeBytes(bytes);
-
-        return byteBuf;
-    }
-
     public ByteBuf encode(ByteBuf byteBuf, Packet packet) {
 
         byte[] bytes = JSON.toJSONBytes(packet);

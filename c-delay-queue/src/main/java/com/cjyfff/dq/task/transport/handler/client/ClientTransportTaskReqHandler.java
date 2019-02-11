@@ -1,5 +1,7 @@
 package com.cjyfff.dq.task.transport.handler.client;
 
+import com.cjyfff.dq.common.SpringUtils;
+import com.cjyfff.dq.task.transport.biz.TransportAsyncBizService;
 import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportRespPacket;
@@ -17,9 +19,18 @@ import lombok.extern.slf4j.Slf4j;
 public class ClientTransportTaskReqHandler extends SimpleChannelInboundHandler<TaskTransportReqPacket> {
     public static final ClientTransportTaskReqHandler INSTANCE = new ClientTransportTaskReqHandler();
 
+    public ClientTransportTaskReqHandler() {
+        super();
+        transportAsyncBizService = (TransportAsyncBizService) SpringUtils.getBean("transportAsyncBizService");
+    }
+
+    private TransportAsyncBizService transportAsyncBizService;
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TaskTransportReqPacket taskTransportReqPacket) {
         log.debug("ClientTransportTaskReqHandler get data，task id: {}", taskTransportReqPacket.getTaskId());
+
+        transportAsyncBizService.asyncAcceptInnerMsg(taskTransportReqPacket);
 
         log.debug("ClientTransportTaskReqHandler send data");
 
