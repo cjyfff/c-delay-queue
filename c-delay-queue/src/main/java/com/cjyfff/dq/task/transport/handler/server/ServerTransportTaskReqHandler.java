@@ -1,5 +1,7 @@
 package com.cjyfff.dq.task.transport.handler.server;
 
+import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
+import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
 import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportRespPacket;
@@ -22,6 +24,10 @@ public class ServerTransportTaskReqHandler extends SimpleChannelInboundHandler<T
         log.info("服务端req handler收到消息，task id:" + taskTransportReqPacket.getTaskId());
 
         log.info("服务端req handler发送消息");
+
+        NodeChannelInfo.channelInfoMap.put(taskTransportReqPacket.getNodeId(),
+            new OneNodeChannelInfo(ctx.channel(), true));
+
 
         TaskTransportRespPacket respPacket = new TaskTransportRespPacket();
         respPacket.setTaskId(taskTransportReqPacket.getTaskId());

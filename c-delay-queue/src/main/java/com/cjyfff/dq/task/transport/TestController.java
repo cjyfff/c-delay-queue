@@ -5,6 +5,7 @@ import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.transport.action.TransportAction;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
+import com.cjyfff.election.core.info.ShardingInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class TestController {
             TaskTransportReqPacket reqPacket = new TaskTransportReqPacket();
 
             reqPacket.setTaskId(reqVo.getTaskId());
+            reqPacket.setNodeId(ShardingInfo.getNodeId());
 
             transportAction.sendMsg(reqVo.getNodeId(), reqPacket);
 
