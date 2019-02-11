@@ -21,6 +21,7 @@ public class PacketCoder {
             {
                 put(PacketType.TASK_TRANSPORT_REQ, TaskTransportReqPacket.class);
                 put(PacketType.TASK_TRANSPORT_RESP, TaskTransportRespPacket.class);
+                put(PacketType.CLIENT_INIT_INFO, ClientInitInfoPacket.class);
             }
         };
 
