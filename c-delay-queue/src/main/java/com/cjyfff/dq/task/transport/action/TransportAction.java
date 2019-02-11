@@ -95,7 +95,13 @@ public class TransportAction {
             throw new ApiException(ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_CODE, ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_MSG);
         }
 
-        nodeChannelInfo.getChannel().writeAndFlush(packet);
+        nodeChannelInfo.getChannel().writeAndFlush(packet).addListener(future -> {
+            if (future.isSuccess()) {
+                log.info("Success to send Msg...");
+            } else {
+                log.error("Fail to send Msg");
+            }
+        });
     }
 
     private void createServer() {
@@ -162,7 +168,7 @@ public class TransportAction {
             if (future.isSuccess()) {
                 Channel channel = ((ChannelFuture) future).channel();
 
-                NodeChannelInfo.channelInfoMap.put(serverNodeId, new OneNodeChannelInfo(channel, false));
+                NodeChannelInfo.channelInfoMap.put(serverNodeId, new OneNodeChannelInfo(channel, true));
 
                 log.info("Success to connect server {}", host);
             } else if (retry == 0) {

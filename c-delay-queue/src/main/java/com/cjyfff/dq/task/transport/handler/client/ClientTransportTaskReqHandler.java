@@ -3,6 +3,7 @@ package com.cjyfff.dq.task.transport.handler.client;
 import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportRespPacket;
+import com.cjyfff.election.core.info.ShardingInfo;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -25,6 +26,7 @@ public class ClientTransportTaskReqHandler extends SimpleChannelInboundHandler<T
         TaskTransportRespPacket respPacket = new TaskTransportRespPacket();
         respPacket.setTaskId(taskTransportReqPacket.getTaskId());
         respPacket.setResult("success");
+        respPacket.setNodeId(ShardingInfo.getNodeId());
         respPacket.setType(PacketType.TASK_TRANSPORT_RESP);
 
         ctx.channel().writeAndFlush(respPacket);

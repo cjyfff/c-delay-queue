@@ -5,6 +5,7 @@ import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
 import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportRespPacket;
+import com.cjyfff.election.core.info.ShardingInfo;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -26,10 +27,11 @@ public class ServerTransportTaskReqHandler extends SimpleChannelInboundHandler<T
         log.info("服务端req handler发送消息");
 
         NodeChannelInfo.channelInfoMap.put(taskTransportReqPacket.getNodeId(),
-            new OneNodeChannelInfo(ctx.channel(), true));
+            new OneNodeChannelInfo(ctx.channel(), false));
 
 
         TaskTransportRespPacket respPacket = new TaskTransportRespPacket();
+        respPacket.setNodeId(ShardingInfo.getNodeId());
         respPacket.setTaskId(taskTransportReqPacket.getTaskId());
         respPacket.setResult("success");
         respPacket.setType(PacketType.TASK_TRANSPORT_RESP);

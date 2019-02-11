@@ -4,6 +4,7 @@ import com.cjyfff.dq.common.DefaultWebApiResult;
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.transport.action.TransportAction;
+import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
 import com.cjyfff.election.core.info.ShardingInfo;
 import lombok.Getter;
@@ -32,6 +33,7 @@ public class TestController {
 
             reqPacket.setTaskId(reqVo.getTaskId());
             reqPacket.setNodeId(ShardingInfo.getNodeId());
+            reqPacket.setType(PacketType.TASK_TRANSPORT_REQ);
 
             transportAction.sendMsg(reqVo.getNodeId(), reqPacket);
 
