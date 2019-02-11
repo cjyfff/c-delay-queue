@@ -7,4 +7,6 @@ public interface PacketType {
     Byte TASK_TRANSPORT_REQ = 1;
 
     Byte TASK_TRANSPORT_RESP = 2;
+
+    Byte CLIENT_INIT_INFO = 3;
 }

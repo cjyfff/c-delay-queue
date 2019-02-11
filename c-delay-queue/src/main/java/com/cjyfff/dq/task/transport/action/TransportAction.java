@@ -7,10 +7,11 @@ import java.util.concurrent.TimeUnit;
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.transport.handler.PacketEncoder;
-import com.cjyfff.dq.task.transport.handler.client.ClientHandler;
+import com.cjyfff.dq.task.transport.handler.client.ClientInitHandler;
 import com.cjyfff.dq.task.transport.handler.PacketDecoder;
 import com.cjyfff.dq.task.transport.handler.client.ClientTransportTaskReqHandler;
 import com.cjyfff.dq.task.transport.handler.client.ClientTransportTaskRespHandler;
+import com.cjyfff.dq.task.transport.handler.server.ServerGetClientInitInfoHandler;
 import com.cjyfff.dq.task.transport.handler.server.ServerTransportTaskReqHandler;
 import com.cjyfff.dq.task.transport.handler.server.ServerTransportTaskRespHandler;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
@@ -97,7 +98,7 @@ public class TransportAction {
 
         nodeChannelInfo.getChannel().writeAndFlush(packet).addListener(future -> {
             if (future.isSuccess()) {
-                log.info("Success to send Msg...");
+                log.debug("Success to send Msg");
             } else {
                 log.error("Fail to send Msg");
             }
@@ -121,6 +122,7 @@ public class TransportAction {
                     ch.pipeline()
                         .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 6, 4))
                         .addLast(new PacketDecoder())
+                        .addLast(ServerGetClientInitInfoHandler.INSTANCE)
                         .addLast(ServerTransportTaskReqHandler.INSTANCE)
                         .addLast(ServerTransportTaskRespHandler.INSTANCE)
                         .addLast(new PacketEncoder());
@@ -153,7 +155,7 @@ public class TransportAction {
                     ch.pipeline()
                         .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 6, 4))
                         .addLast(new PacketDecoder())
-                        .addLast(ClientHandler.INSTANCE)
+                        .addLast(ClientInitHandler.INSTANCE)
                         .addLast(ClientTransportTaskReqHandler.INSTANCE)
                         .addLast(ClientTransportTaskRespHandler.INSTANCE)
                         .addLast(new PacketEncoder());

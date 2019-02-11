@@ -1,8 +1,5 @@
 package com.cjyfff.dq.task.transport.handler.client;
 
-import java.util.Date;
-
-import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportRespPacket;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,6 +17,6 @@ public class ClientTransportTaskRespHandler extends SimpleChannelInboundHandler<
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TaskTransportRespPacket respPacket) {
-        log.info(new Date() + ": 客户端resp handler读到数据 -> " + respPacket.getResult());
+        log.debug("ClientTransportTaskRespHandler get data -> {}", respPacket.getResult());
     }
 }

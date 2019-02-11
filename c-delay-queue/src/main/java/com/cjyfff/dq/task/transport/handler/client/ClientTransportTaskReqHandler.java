@@ -19,9 +19,9 @@ public class ClientTransportTaskReqHandler extends SimpleChannelInboundHandler<T
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TaskTransportReqPacket taskTransportReqPacket) {
-        log.info("客户端req handler收到消息，task id:" + taskTransportReqPacket.getTaskId());
+        log.debug("ClientTransportTaskReqHandler get data，task id: {}", taskTransportReqPacket.getTaskId());
 
-        log.info("客户端req handler发送消息");
+        log.debug("ClientTransportTaskReqHandler send data");
 
         TaskTransportRespPacket respPacket = new TaskTransportRespPacket();
         respPacket.setTaskId(taskTransportReqPacket.getTaskId());

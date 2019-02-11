@@ -22,9 +22,9 @@ public class ServerTransportTaskReqHandler extends SimpleChannelInboundHandler<T
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TaskTransportReqPacket taskTransportReqPacket) {
-        log.info("服务端req handler收到消息，task id:" + taskTransportReqPacket.getTaskId());
+        log.debug("ServerTransportTaskReqHandler get msg，task id:{}", taskTransportReqPacket.getTaskId());
 
-        log.info("服务端req handler发送消息");
+        log.debug("ServerTransportTaskReqHandler send Msg");
 
         NodeChannelInfo.channelInfoMap.put(taskTransportReqPacket.getNodeId(),
             new OneNodeChannelInfo(ctx.channel(), false));
