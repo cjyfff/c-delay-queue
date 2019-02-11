@@ -9,6 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TaskTransportRespPacket extends Packet {
+    private String taskId;
+
     private String code;
 
     private String msg;

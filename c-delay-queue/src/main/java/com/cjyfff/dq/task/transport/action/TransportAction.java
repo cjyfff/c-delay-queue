@@ -2,11 +2,15 @@ package com.cjyfff.dq.task.transport.action;
 
 import java.util.Map.Entry;
 
+import com.cjyfff.dq.common.error.ApiException;
+import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.transport.handler.PacketEncoder;
 import com.cjyfff.dq.task.transport.handler.client.ClientHandler;
 import com.cjyfff.dq.task.transport.handler.PacketDecoder;
+import com.cjyfff.dq.task.transport.handler.client.ClientTransportTaskReqHandler;
 import com.cjyfff.dq.task.transport.handler.client.ClientTransportTaskRespHandler;
 import com.cjyfff.dq.task.transport.handler.server.ServerTransportTaskReqHandler;
+import com.cjyfff.dq.task.transport.handler.server.ServerTransportTaskRespHandler;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
 import com.cjyfff.dq.task.transport.protocol.Packet;
@@ -83,7 +87,14 @@ public class TransportAction {
         }
     }
 
-    public void sendMsg(Byte nodeId, Packet packet) {}
+    public void sendMsg(Byte nodeId, Packet packet) throws ApiException{
+        OneNodeChannelInfo nodeChannelInfo = NodeChannelInfo.channelInfoMap.get(nodeId);
+        if (nodeChannelInfo == null) {
+            throw new ApiException(ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_CODE, ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_MSG);
+        }
+
+        nodeChannelInfo.getChannel().writeAndFlush(packet);
+    }
 
     private void createServer() {
         NioEventLoopGroup boosGroup = new NioEventLoopGroup();
@@ -103,6 +114,7 @@ public class TransportAction {
                         .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 6, 4))
                         .addLast(new PacketDecoder())
                         .addLast(ServerTransportTaskReqHandler.INSTANCE)
+                        .addLast(ServerTransportTaskRespHandler.INSTANCE)
                         .addLast(new PacketEncoder());
                 }
             });
@@ -134,6 +146,7 @@ public class TransportAction {
                         .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 6, 4))
                         .addLast(new PacketDecoder())
                         .addLast(ClientHandler.INSTANCE)
+                        .addLast(ClientTransportTaskReqHandler.INSTANCE)
                         .addLast(ClientTransportTaskRespHandler.INSTANCE)
                         .addLast(new PacketEncoder());
                 }
