@@ -1,6 +1,5 @@
 package com.cjyfff.dq.task.transport.action;
 
-import java.util.Date;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
@@ -60,18 +59,16 @@ public class TransportAction {
                 // 连接其他节点netty服务
                 String serverHost = info.getValue().split(":")[0];
                 int serverPort = 9999;
-                connectServer(info.getKey(), serverHost, serverPort);
+                asClient(info.getKey(), serverHost, serverPort);
 
             } else if (info.getKey().equals(myNodeId)) {
 
                 // 节点是最后一个节点时不需要创建server
                 if (i != shardingSize - 1) {
                     // 创建server供其他节点连接
-                    createServer();
+                    asServer();
                     break;
                 }
-
-
             }
 
             i ++;
@@ -105,7 +102,7 @@ public class TransportAction {
         });
     }
 
-    private void createServer() {
+    private void asServer() {
         NioEventLoopGroup boosGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -139,7 +136,7 @@ public class TransportAction {
         });
     }
 
-    private void connectServer(Byte serverNodeId, String serverHost, int serverPort) {
+    private void asClient(Byte serverNodeId, String serverHost, int serverPort) {
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
         Bootstrap bootstrap = new Bootstrap();
@@ -178,7 +175,7 @@ public class TransportAction {
             } else {
                 int order = (5 - retry) + 1;
                 int delay = 1 << order;
-                log.error(new Date() + ": 连接失败，第" + order + "次重连……");
+                log.error("fail to connect，retry {} times...", order);
                 bootstrap.config().group().schedule(() -> doConnect(bootstrap, host, port, retry - 1, serverNodeId), delay, TimeUnit
                     .SECONDS);
             }
