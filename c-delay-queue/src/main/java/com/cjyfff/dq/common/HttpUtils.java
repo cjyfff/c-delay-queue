@@ -2,12 +2,16 @@ package com.cjyfff.dq.common;
 
 import java.io.IOException;
 
+import org.apache.http.HeaderElement;
+import org.apache.http.HeaderElementIterator;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -17,6 +21,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.message.BasicHeaderElementIterator;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -49,10 +56,26 @@ public class HttpUtils {
 
             PoolingHttpClientConnectionManager pcm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
             pcm.setMaxTotal(100);
-            pcm.setDefaultMaxPerRoute(20);
+            // 每个路由（ip加port）的最大连接数
+            pcm.setDefaultMaxPerRoute(30);
 
             requestConfig = RequestConfig.custom().setConnectionRequestTimeout(10000)
                 .setSocketTimeout(10000).setConnectTimeout(10000).build();
+
+            // 默认的keep alive time out为无限，有可能导致连接无法回收，因此要设置一个默认时间
+            ConnectionKeepAliveStrategy keepAliveStrategy = (response, context) -> {
+                HeaderElementIterator it = new BasicHeaderElementIterator
+                    (response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+                while (it.hasNext()) {
+                    HeaderElement he = it.nextElement();
+                    String param = he.getName();
+                    String value = he.getValue();
+                    if (value != null && "timeout".equalsIgnoreCase(param)) {
+                        return Long.parseLong(value) * 1000;
+                    }
+                }
+                return 30 * 1000;
+            };
 
             httpClient = HttpClients.custom()
                 // 设置连接池管理
@@ -61,6 +84,8 @@ public class HttpUtils {
                 .setDefaultRequestConfig(requestConfig)
                 // 设置重试次数
                 .setRetryHandler(new DefaultHttpRequestRetryHandler(0, false))
+                // 设置长连接策略
+                .setKeepAliveStrategy(keepAliveStrategy)
                 .build();
         } catch (Exception e) {
             logger.error("HttpUtils init get error: ", e);

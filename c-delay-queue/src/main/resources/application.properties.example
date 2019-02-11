@@ -1,5 +1,7 @@
 server.port=8888
 
+logging.level.com.cjyfff=debug
+
 # 节点间通信ip
 transport.port=9999
 
