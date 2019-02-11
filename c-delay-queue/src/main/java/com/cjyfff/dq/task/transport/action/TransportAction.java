@@ -1,6 +1,8 @@
 package com.cjyfff.dq.task.transport.action;
 
+import java.util.Date;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
@@ -56,8 +58,8 @@ public class TransportAction {
             if (info.getKey() < myNodeId) {
                 // 连接其他节点netty服务
                 String serverHost = info.getValue().split(":")[0];
-                int serverIp = 9999;
-                connectServer(info.getKey(), serverHost, serverIp);
+                int serverPort = 9999;
+                connectServer(info.getKey(), serverHost, serverPort);
 
             } else if (info.getKey().equals(myNodeId)) {
 
@@ -129,7 +131,7 @@ public class TransportAction {
         });
     }
 
-    private void connectServer(Byte serverNodeId, String serverHost, int serverIp) {
+    private void connectServer(Byte serverNodeId, String serverHost, int serverPort) {
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
         Bootstrap bootstrap = new Bootstrap();
@@ -152,16 +154,25 @@ public class TransportAction {
                 }
             });
 
-        bootstrap.connect(serverHost, serverIp).addListener(future -> {
-            if (future.isSuccess()) {
+        doConnect(bootstrap, serverHost, serverPort, 5, serverNodeId);
+    }
 
+    private static void doConnect(Bootstrap bootstrap, String host, int port, int retry, Byte serverNodeId) {
+        bootstrap.connect(host, port).addListener(future -> {
+            if (future.isSuccess()) {
                 Channel channel = ((ChannelFuture) future).channel();
 
                 NodeChannelInfo.channelInfoMap.put(serverNodeId, new OneNodeChannelInfo(channel, false));
 
-                log.info("Success to connect server {}", serverHost);
+                log.info("Success to connect server {}", host);
+            } else if (retry == 0) {
+                log.error("Fail to connect server {}", host);
             } else {
-                log.error("Fail to connect server {}", serverHost);
+                int order = (5 - retry) + 1;
+                int delay = 1 << order;
+                log.error(new Date() + ": 连接失败，第" + order + "次重连……");
+                bootstrap.config().group().schedule(() -> doConnect(bootstrap, host, port, retry - 1, serverNodeId), delay, TimeUnit
+                    .SECONDS);
             }
         });
     }
