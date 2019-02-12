@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.alibaba.fastjson.JSON;
 
+import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.election.core.info.ShardingInfo;
 import com.cjyfff.dq.common.error.ApiException;
@@ -76,7 +77,7 @@ public class PublicMsgServiceImpl implements PublicMsgService {
         checkFunctionName(reqDto.getFunctionName());
 
         if (acceptTaskComponent.checkIsMyTask(reqDto.getTaskId())) {
-            DelayTask newDelayTask = msgServiceComponent.createTask(reqDto);
+            DelayTask newDelayTask = msgServiceComponent.createTask(reqDto, TaskStatus.ACCEPT);
             if (acceptTaskComponent.checkNeedToPushQueueNow(newDelayTask.getDelayTime())) {
                 msgServiceComponent.doPush2Queue(newDelayTask);
             } else {
@@ -85,6 +86,8 @@ public class PublicMsgServiceImpl implements PublicMsgService {
         } else {
             // 转发到对应机器
             try {
+                msgServiceComponent.createTask(reqDto, TaskStatus.TRANSMITING);
+
                 Byte targetShardingId = acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId());
                 String targetHost = ShardingInfo.getShardingMap().get(targetShardingId);
 

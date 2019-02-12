@@ -28,6 +28,9 @@ public class ErrorCodeMsg {
     public static String CAN_NOT_FIND_HANDLER_BY_SPECIFIED_FUNCTION_NAME_CODE = "-105";
     public static String CAN_NOT_FIND_HANDLER_BY_SPECIFIED_FUNCTION_NAME_MSG = "Can not find handler by specified function name.";
 
-    public static String SEND_INNER_TASK_GET_ERROR_CODE = "106";
+    public static String SEND_INNER_TASK_GET_ERROR_CODE = "-106";
     public static String SEND_INNER_TASK_GET_ERROR_MSG = "Send inner task get error.";
+
+    public static String CAN_NOT_FIND_TASK_ERROR_CODE = "-107";
+    public static String CAN_NOT_FIND_TASK_ERROR_MSG = "Can not find task.";
 }

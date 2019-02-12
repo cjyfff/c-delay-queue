@@ -1,11 +1,14 @@
 package com.cjyfff.dq.task.service.impl;
 
+import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.component.AcceptTaskComponent;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
+import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.service.InnerMsgService;
 import com.cjyfff.dq.task.vo.dto.InnerMsgDto;
+import com.cjyfff.election.core.info.ShardingInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,9 @@ public class InnerMsgServiceImpl implements InnerMsgService {
     @Autowired
     private MsgServiceComponent msgServiceComponent;
 
+    @Autowired
+    private DelayTaskMapper delayTaskMapper;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void acceptMsg(InnerMsgDto reqDto) throws Exception {
@@ -35,7 +41,12 @@ public class InnerMsgServiceImpl implements InnerMsgService {
             throw new ApiException(ErrorCodeMsg.IS_NOT_MY_TASK_CODE, errMsg);
         }
 
-        DelayTask delayTask = msgServiceComponent.createTask(reqDto);
+        DelayTask delayTask = delayTaskMapper.selectByTaskIdAndStatus(TaskStatus.TRANSMITING.getStatus(), reqDto.getTaskId(),
+            ShardingInfo.getNodeId());
+
+        if (delayTask == null) {
+            throw new ApiException(ErrorCodeMsg.CAN_NOT_FIND_TASK_ERROR_CODE, ErrorCodeMsg.CAN_NOT_FIND_TASK_ERROR_MSG);
+        }
 
         if (acceptTaskComponent.checkNeedToPushQueueNow(reqDto.getDelayTime())) {
             msgServiceComponent.doPush2Queue(delayTask);

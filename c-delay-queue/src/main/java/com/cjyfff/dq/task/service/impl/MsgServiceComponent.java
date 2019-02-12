@@ -53,7 +53,7 @@ public class MsgServiceComponent {
      * 调用方会重复发送请求，这样的话任务就会重复被创建
      * @param reqDto
      */
-    DelayTask createTask(BaseMsgDto reqDto) throws Exception {
+    DelayTask createTask(BaseMsgDto reqDto, TaskStatus taskStatus) throws Exception {
         DelayTask oldDelayTask = delayTaskMapper.selectByTaskIdForUpdate(reqDto.getTaskId());
         if (oldDelayTask != null) {
             throw new ApiException(ErrorCodeMsg.TASK_ID_EXIST_CODE, ErrorCodeMsg.TASK_ID_EXIST_MSG);
@@ -68,10 +68,10 @@ public class MsgServiceComponent {
         delayTask.setRetryInterval(reqDto.getRetryInterval());
         delayTask.setDelayTime(reqDto.getDelayTime());
         delayTask.setExecuteTime(System.currentTimeMillis() / 1000 + reqDto.getDelayTime());
-        delayTask.setStatus(TaskStatus.ACCEPT.getStatus());
+        delayTask.setStatus(taskStatus.getStatus());
         delayTask.setCreatedAt(new Date());
         delayTask.setModifiedAt(new Date());
-        delayTask.setShardingId(acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId()).byteValue());
+        delayTask.setShardingId(acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId()));
 
         delayTaskMapper.insert(delayTask);
 
