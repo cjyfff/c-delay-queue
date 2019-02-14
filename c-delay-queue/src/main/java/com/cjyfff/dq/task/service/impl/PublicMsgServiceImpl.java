@@ -12,15 +12,12 @@ import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
 import com.cjyfff.election.core.info.ShardingInfo;
 import com.cjyfff.dq.common.error.ApiException;
-import com.cjyfff.dq.common.DefaultWebApiResult;
-import com.cjyfff.dq.common.HttpUtils;
 import com.cjyfff.dq.common.TaskHandlerContext;
 import com.cjyfff.dq.task.handler.ITaskHandler;
 import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.service.PublicMsgService;
 import com.cjyfff.dq.task.vo.dto.AcceptMsgDto;
 import com.cjyfff.dq.common.component.AcceptTaskComponent;
-import com.cjyfff.dq.task.vo.dto.InnerMsgDto;
 import com.google.common.util.concurrent.RateLimiter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -95,37 +92,7 @@ public class PublicMsgServiceImpl implements PublicMsgService {
 
             msgServiceComponent.createTaskCommit(reqDto, TaskStatus.TRANSMITING);
 
-            Byte targetShardingId = acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId());
-            //String targetHost = ShardingInfo.getShardingMap().get(targetShardingId);
-            //
-            //if (targetHost == null) {
-            //    throw new ApiException(ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_CODE,
-            //        String.format("Can not get sharding info, sharding id: %s, task id: %s",
-            //            targetShardingId.toString(), reqDto.getTaskId()));
-            //}
-            //
-            //String url = String.format("http://%s/dq/acceptInnerMsg", targetHost);
-            //String nonceStr = UUID.randomUUID().toString().replace("-", "");
-            //InnerMsgDto innerMsgDto = new InnerMsgDto();
-            //
-            //BeanUtils.copyProperties(reqDto, innerMsgDto);
-            //innerMsgDto.setNonceStr(nonceStr);
-            //try {
-            //    sendInnerTaskMsg(url, innerMsgDto, targetShardingId, targetHost);
-            //} catch (Exception err) {
-            //    log.error("Send inner task get error: ", err);
-            //    throw err;
-            //}
-
-            TaskTransportReqPacket reqPacket = new TaskTransportReqPacket();
-            BeanUtils.copyProperties(reqDto, reqPacket);
-            String nonceStr = UUID.randomUUID().toString().replace("-", "");
-            reqPacket.setNonceStr(nonceStr);
-            reqPacket.setNodeId(ShardingInfo.getNodeId());
-            reqPacket.setType(PacketType.TASK_TRANSPORT_REQ);
-
-            // todo: 添加上发送成功校验
-            transportAction.sendMsg(targetShardingId, reqPacket);
+            sendInnerTaskMsg(reqDto);
         }
 
     }
@@ -139,17 +106,17 @@ public class PublicMsgServiceImpl implements PublicMsgService {
         }
     }
 
-    private void sendInnerTaskMsg(String url, InnerMsgDto innerMsgDto,
-                                 Byte targetShardingId, String targetHost) throws Exception {
-        String resultJson = HttpUtils.doPost(url, JSON.toJSONString(innerMsgDto));
+    private void sendInnerTaskMsg(AcceptMsgDto reqDto) throws Exception {
+        Byte targetShardingId = acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId());
 
-        log.info(String.format("Send inner task msg to node id :%s, host: %s, resp is %s",
-            targetShardingId, targetHost, resultJson));
+        TaskTransportReqPacket reqPacket = new TaskTransportReqPacket();
+        BeanUtils.copyProperties(reqDto, reqPacket);
+        String nonceStr = UUID.randomUUID().toString().replace("-", "");
+        reqPacket.setNonceStr(nonceStr);
+        reqPacket.setNodeId(ShardingInfo.getNodeId());
+        reqPacket.setType(PacketType.TASK_TRANSPORT_REQ);
 
-        DefaultWebApiResult result = JSON.parseObject(resultJson, DefaultWebApiResult.class);
-        if (!DefaultWebApiResult.SUCCESS_CODE.equals(result.getCode())) {
-            log.error("Send inner task get error: " + result.getMsg());
-            throw new ApiException(ErrorCodeMsg.SEND_INNER_TASK_GET_ERROR_CODE, "Send inner task get error: " + result.getMsg());
-        }
+        // todo: 添加上发送成功校验
+        transportAction.sendMsg(targetShardingId, reqPacket);
     }
 }

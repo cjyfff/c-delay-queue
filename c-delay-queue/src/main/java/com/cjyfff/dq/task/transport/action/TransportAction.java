@@ -3,6 +3,8 @@ package com.cjyfff.dq.task.transport.action;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
+import com.alibaba.fastjson.JSON;
+
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.transport.handler.PacketEncoder;
@@ -97,9 +99,15 @@ public class TransportAction {
 
         nodeChannelInfo.getChannel().writeAndFlush(packet).addListener(future -> {
             if (future.isSuccess()) {
-                log.debug("Success to send Msg");
+                log.debug("Success to send Msg, target node id: {}", nodeId);
             } else {
-                log.error("Fail to send Msg");
+                String packetStr;
+                if (packet == null) {
+                    packetStr = "";
+                } else {
+                    packetStr = JSON.toJSONString(packet);
+                }
+                log.error("Fail to send Msg, msg data:{}", packetStr);
             }
         });
     }
