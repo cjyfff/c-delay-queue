@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 
 import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
+import com.cjyfff.dq.task.service.MsgServiceComponent;
 import com.cjyfff.election.core.info.ShardingInfo;
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.DefaultWebApiResult;
@@ -85,24 +86,25 @@ public class PublicMsgServiceImpl implements PublicMsgService {
             }
         } else {
             // 转发到对应机器
+
+            msgServiceComponent.createTaskCommit(reqDto, TaskStatus.TRANSMITING);
+
+            Byte targetShardingId = acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId());
+            String targetHost = ShardingInfo.getShardingMap().get(targetShardingId);
+
+            if (targetHost == null) {
+                throw new ApiException(ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_CODE,
+                    String.format("Can not get sharding info, sharding id: %s, task id: %s",
+                        targetShardingId.toString(), reqDto.getTaskId()));
+            }
+
+            String url = String.format("http://%s/dq/acceptInnerMsg", targetHost);
+            String nonceStr = UUID.randomUUID().toString().replace("-", "");
+            InnerMsgDto innerMsgDto = new InnerMsgDto();
+
+            BeanUtils.copyProperties(reqDto, innerMsgDto);
+            innerMsgDto.setNonceStr(nonceStr);
             try {
-                msgServiceComponent.createTask(reqDto, TaskStatus.TRANSMITING);
-
-                Byte targetShardingId = acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId());
-                String targetHost = ShardingInfo.getShardingMap().get(targetShardingId);
-
-                if (targetHost == null) {
-                    throw new ApiException(ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_CODE,
-                        String.format("Can not get sharding info, sharding id: %s, task id: %s",
-                            targetShardingId.toString(), reqDto.getTaskId()));
-                }
-
-                String url = String.format("http://%s/dq/acceptInnerMsg", targetHost);
-                String nonceStr = UUID.randomUUID().toString().replace("-", "");
-                InnerMsgDto innerMsgDto = new InnerMsgDto();
-
-                BeanUtils.copyProperties(reqDto, innerMsgDto);
-                innerMsgDto.setNonceStr(nonceStr);
                 sendInnerTaskMsg(url, innerMsgDto, targetShardingId, targetHost);
             } catch (Exception err) {
                 log.error("Send inner task get error: ", err);
