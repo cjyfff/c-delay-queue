@@ -10,7 +10,6 @@ import com.cjyfff.dq.common.TaskConfig;
 import com.cjyfff.dq.common.lock.ZkLock;
 import com.cjyfff.dq.task.service.InnerMsgService;
 import com.cjyfff.dq.task.service.PublicMsgService;
-import com.cjyfff.dq.task.service.TestService;
 import com.cjyfff.dq.task.vo.dto.AcceptMsgDto;
 import com.cjyfff.dq.task.vo.dto.InnerMsgDto;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +31,6 @@ public class MessageController extends BaseController {
 
     @Autowired
     private InnerMsgService innerMsgService;
-
-    @Autowired
-    private TestService testService;
 
     @Autowired
     private ZkLock zkLock;
@@ -88,12 +84,6 @@ public class MessageController extends BaseController {
         } finally {
             zkLock.tryUnlock(TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
         }
-    }
-
-    @RequestMapping(path = "/test", method={RequestMethod.POST})
-    public DefaultWebApiResult test() {
-        testService.test();
-        return DefaultWebApiResult.success();
     }
 
     private void checkParams(BaseMsgDto reqDto) throws ApiException {
