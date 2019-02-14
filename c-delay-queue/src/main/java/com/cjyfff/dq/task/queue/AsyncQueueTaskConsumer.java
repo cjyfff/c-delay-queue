@@ -38,7 +38,7 @@ public class AsyncQueueTaskConsumer {
 
     @Async("taskConsumerExecutor")
     @Transactional(rollbackFor = Exception.class)
-    void doConsumer(QueueTask task) {
+    public void doConsumer(QueueTask task) {
         // 1、乐观锁更新状态
         // 2、用task id 查出数据
         // 3、处理
