@@ -8,6 +8,7 @@ import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.service.MsgServiceComponent;
 import com.cjyfff.dq.task.transport.action.TransportAction;
+import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
 import com.cjyfff.election.core.info.ShardingInfo;
 import com.cjyfff.dq.common.error.ApiException;
@@ -120,6 +121,8 @@ public class PublicMsgServiceImpl implements PublicMsgService {
             BeanUtils.copyProperties(reqDto, reqPacket);
             String nonceStr = UUID.randomUUID().toString().replace("-", "");
             reqPacket.setNonceStr(nonceStr);
+            reqPacket.setNodeId(ShardingInfo.getNodeId());
+            reqPacket.setType(PacketType.TASK_TRANSPORT_REQ);
 
             // todo: 添加上发送成功校验
             transportAction.sendMsg(targetShardingId, reqPacket);

@@ -88,6 +88,8 @@ public class TransportAction {
     }
 
     public void sendMsg(Byte nodeId, Packet packet) throws ApiException{
+        checkSendPacket(packet);
+
         OneNodeChannelInfo nodeChannelInfo = NodeChannelInfo.channelInfoMap.get(nodeId);
         if (nodeChannelInfo == null) {
             throw new ApiException(ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_CODE, ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_MSG);
@@ -100,6 +102,12 @@ public class TransportAction {
                 log.error("Fail to send Msg");
             }
         });
+    }
+
+    private void checkSendPacket(Packet packet) {
+        if (packet.getNodeId() == null || packet.getType() == null) {
+            throw new IllegalArgumentException("Pack's noid id, type can not be null.");
+        }
     }
 
     private void asServer() {
