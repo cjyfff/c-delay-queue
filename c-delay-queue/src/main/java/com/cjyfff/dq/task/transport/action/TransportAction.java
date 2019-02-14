@@ -36,8 +36,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TransportAction {
 
-    // todo: 需要更换为l_election.specified_port
-    @Value("${transport.port}")
+    @Value("${l_election.specified_port}")
     private int transportPort;
 
     public void connectAllNodes() {
@@ -54,8 +53,8 @@ public class TransportAction {
             if (info.getKey() < myNodeId) {
                 // 连接其他节点netty服务
                 String serverHost = info.getValue().split(":")[0];
-                int serverPort = 9999;
-                asClient(info.getKey(), serverHost, serverPort);
+                int serverPort = Integer.valueOf(info.getValue().split(":")[1]);
+                connectServer(info.getKey(), serverHost, serverPort);
 
             }
         }
@@ -98,11 +97,11 @@ public class TransportAction {
 
     private void checkSendPacket(Packet packet) {
         if (packet.getNodeId() == null || packet.getType() == null) {
-            throw new IllegalArgumentException("Pack's noid id, type can not be null.");
+            throw new IllegalArgumentException("Pack's node id, type can not be null.");
         }
     }
 
-    private void asClient(Byte serverNodeId, String serverHost, int serverPort) {
+    private void connectServer(Byte serverNodeId, String serverHost, int serverPort) {
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
         Bootstrap bootstrap = new Bootstrap();

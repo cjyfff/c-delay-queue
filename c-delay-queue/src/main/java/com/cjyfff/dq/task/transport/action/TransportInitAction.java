@@ -23,8 +23,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TransportInitAction {
 
-    // todo: 需要更换为l_election.specified_port
-    @Value("${transport.port}")
+    @Value("${l_election.specified_port}")
     private int transportPort;
 
     public void startServer() {
