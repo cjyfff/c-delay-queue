@@ -1,9 +1,11 @@
 package com.cjyfff.dq.task.transport.biz;
 
-import java.util.concurrent.TimeUnit;
-
+import com.cjyfff.dq.task.service.InnerMsgService;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
+import com.cjyfff.dq.task.vo.dto.InnerMsgDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +16,20 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class TransportAsyncBizService {
 
+    @Autowired
+    private InnerMsgService innerMsgService;
+
     @Async("acceptInnerTaskExecutor")
     public void asyncAcceptInnerMsg(TaskTransportReqPacket reqPacket) {
         log.info("asyncAcceptInnerMsg begin, task id: {}", reqPacket.getTaskId());
         try {
-            TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException ie) {
-            ie.printStackTrace();
+            InnerMsgDto innerMsgDto = new InnerMsgDto();
+            BeanUtils.copyProperties(reqPacket, innerMsgDto);
+
+            innerMsgService.acceptMsg(innerMsgDto);
+
+        } catch (Exception e) {
+            log.error("AsyncAcceptInnerMsg get error:", e);
         }
         log.info("asyncAcceptInnerMsg end, task id: {}", reqPacket.getTaskId());
     }

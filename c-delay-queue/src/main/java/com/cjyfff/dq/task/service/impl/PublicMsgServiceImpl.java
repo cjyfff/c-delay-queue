@@ -7,6 +7,8 @@ import com.alibaba.fastjson.JSON;
 import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.service.MsgServiceComponent;
+import com.cjyfff.dq.task.transport.action.TransportAction;
+import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
 import com.cjyfff.election.core.info.ShardingInfo;
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.DefaultWebApiResult;
@@ -41,6 +43,9 @@ public class PublicMsgServiceImpl implements PublicMsgService {
 
     @Autowired
     private MsgServiceComponent msgServiceComponent;
+
+    @Autowired
+    private TransportAction transportAction;
 
     @Value("${delay_queue.task_rate_limit_permits}")
     private double taskRateLimitPermits;
@@ -90,26 +95,34 @@ public class PublicMsgServiceImpl implements PublicMsgService {
             msgServiceComponent.createTaskCommit(reqDto, TaskStatus.TRANSMITING);
 
             Byte targetShardingId = acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId());
-            String targetHost = ShardingInfo.getShardingMap().get(targetShardingId);
+            //String targetHost = ShardingInfo.getShardingMap().get(targetShardingId);
+            //
+            //if (targetHost == null) {
+            //    throw new ApiException(ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_CODE,
+            //        String.format("Can not get sharding info, sharding id: %s, task id: %s",
+            //            targetShardingId.toString(), reqDto.getTaskId()));
+            //}
+            //
+            //String url = String.format("http://%s/dq/acceptInnerMsg", targetHost);
+            //String nonceStr = UUID.randomUUID().toString().replace("-", "");
+            //InnerMsgDto innerMsgDto = new InnerMsgDto();
+            //
+            //BeanUtils.copyProperties(reqDto, innerMsgDto);
+            //innerMsgDto.setNonceStr(nonceStr);
+            //try {
+            //    sendInnerTaskMsg(url, innerMsgDto, targetShardingId, targetHost);
+            //} catch (Exception err) {
+            //    log.error("Send inner task get error: ", err);
+            //    throw err;
+            //}
 
-            if (targetHost == null) {
-                throw new ApiException(ErrorCodeMsg.CAN_NOT_GET_SHARDING_INFO_CODE,
-                    String.format("Can not get sharding info, sharding id: %s, task id: %s",
-                        targetShardingId.toString(), reqDto.getTaskId()));
-            }
-
-            String url = String.format("http://%s/dq/acceptInnerMsg", targetHost);
+            TaskTransportReqPacket reqPacket = new TaskTransportReqPacket();
+            BeanUtils.copyProperties(reqDto, reqPacket);
             String nonceStr = UUID.randomUUID().toString().replace("-", "");
-            InnerMsgDto innerMsgDto = new InnerMsgDto();
+            reqPacket.setNonceStr(nonceStr);
 
-            BeanUtils.copyProperties(reqDto, innerMsgDto);
-            innerMsgDto.setNonceStr(nonceStr);
-            try {
-                sendInnerTaskMsg(url, innerMsgDto, targetShardingId, targetHost);
-            } catch (Exception err) {
-                log.error("Send inner task get error: ", err);
-                throw err;
-            }
+            // todo: 添加上发送成功校验
+            transportAction.sendMsg(targetShardingId, reqPacket);
         }
 
     }
