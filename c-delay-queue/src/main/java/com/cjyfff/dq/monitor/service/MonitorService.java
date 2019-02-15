@@ -1,5 +1,6 @@
 package com.cjyfff.dq.monitor.service;
 
+import com.cjyfff.dq.monitor.controller.vo.MonitorInnerMsgRecordVo;
 import com.cjyfff.dq.monitor.controller.vo.MonitorNodeInfoVo;
 
 /**
@@ -7,4 +8,6 @@ import com.cjyfff.dq.monitor.controller.vo.MonitorNodeInfoVo;
  */
 public interface MonitorService {
     MonitorNodeInfoVo getNodeInfoVo();
+
+    MonitorInnerMsgRecordVo getInnerMsgRecord();
 }

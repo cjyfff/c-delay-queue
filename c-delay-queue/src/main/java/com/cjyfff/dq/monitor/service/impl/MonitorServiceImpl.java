@@ -1,5 +1,11 @@
 package com.cjyfff.dq.monitor.service.impl;
 
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+
+import com.cjyfff.dq.monitor.controller.vo.MonitorInnerMsgRecordVo;
+import com.cjyfff.dq.task.service.component.InnerMsgRecord;
 import com.cjyfff.election.core.info.ElectionStatus;
 import com.cjyfff.election.core.info.ShardingInfo;
 import com.cjyfff.dq.monitor.controller.vo.MonitorNodeInfoVo;
@@ -27,5 +33,24 @@ public class MonitorServiceImpl implements MonitorService {
         }
 
         return infoVo;
+    }
+
+    @Override
+    public MonitorInnerMsgRecordVo getInnerMsgRecord() {
+
+        MonitorInnerMsgRecordVo respVo = new MonitorInnerMsgRecordVo();
+
+        respVo.setRecordAmount(InnerMsgRecord.innerMsgRecordMap.size());
+
+        List<String> taskIds = new ArrayList<>();
+
+        Enumeration<String> taskIdEnums = InnerMsgRecord.innerMsgRecordMap.keys();
+        while (taskIdEnums.hasMoreElements()) {
+            taskIds.add(taskIdEnums.nextElement());
+        }
+
+        respVo.setTaskIds(taskIds);
+
+        return respVo;
     }
 }
