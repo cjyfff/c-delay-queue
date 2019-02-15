@@ -8,10 +8,8 @@ import com.cjyfff.dq.common.BeanValidators;
 import com.cjyfff.dq.common.DefaultWebApiResult;
 import com.cjyfff.dq.common.TaskConfig;
 import com.cjyfff.dq.common.lock.ZkLock;
-import com.cjyfff.dq.task.service.InnerMsgService;
 import com.cjyfff.dq.task.service.PublicMsgService;
 import com.cjyfff.dq.task.vo.dto.AcceptMsgDto;
-import com.cjyfff.dq.task.vo.dto.InnerMsgDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,9 +26,6 @@ public class MessageController extends BaseController {
 
     @Autowired
     private PublicMsgService publicMsgService;
-
-    @Autowired
-    private InnerMsgService innerMsgService;
 
     @Autowired
     private ZkLock zkLock;
@@ -56,30 +51,6 @@ public class MessageController extends BaseController {
             return DefaultWebApiResult.failure(ae.getCode(), ae.getMsg());
         } catch (Exception e) {
             log.error("publicMsgService acceptMsg get error: ", e);
-            return DefaultWebApiResult.failure(ErrorCodeMsg.SYSTEM_ERROR_CODE, ErrorCodeMsg.SYSTEM_ERROR_MSG);
-        } finally {
-            zkLock.tryUnlock(TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
-        }
-    }
-
-    /**
-     * 接收内部转发消息
-     */
-    @RequestMapping(path = "/dq/acceptInnerMsg", method={RequestMethod.POST})
-    public DefaultWebApiResult acceptInnerMsg(@RequestBody InnerMsgDto reqDto) {
-        try {
-            checkParams(reqDto);
-
-            if (! zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr())) {
-                return DefaultWebApiResult.failure(ErrorCodeMsg.TASK_IS_PROCESSING_CODE, ErrorCodeMsg.TASK_IS_PROCESSING_MSG);
-            }
-
-            innerMsgService.acceptMsg(reqDto);
-            return DefaultWebApiResult.success();
-        } catch (ApiException ae) {
-            return DefaultWebApiResult.failure(ae.getCode(), ae.getMsg());
-        } catch (Exception e) {
-            log.error("innerMsgService acceptMsg get error: ", e);
             return DefaultWebApiResult.failure(ErrorCodeMsg.SYSTEM_ERROR_CODE, ErrorCodeMsg.SYSTEM_ERROR_MSG);
         } finally {
             zkLock.tryUnlock(TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
