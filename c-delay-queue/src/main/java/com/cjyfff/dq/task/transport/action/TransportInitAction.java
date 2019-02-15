@@ -2,6 +2,7 @@ package com.cjyfff.dq.task.transport.action;
 
 import com.cjyfff.dq.task.transport.handler.PacketDecoder;
 import com.cjyfff.dq.task.transport.handler.PacketEncoder;
+import com.cjyfff.dq.task.transport.handler.Spliter;
 import com.cjyfff.dq.task.transport.handler.server.ServerGetClientInitInfoHandler;
 import com.cjyfff.dq.task.transport.handler.server.ServerTransportTaskReqHandler;
 import com.cjyfff.dq.task.transport.handler.server.ServerTransportTaskRespHandler;
@@ -11,7 +12,6 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -41,7 +41,7 @@ public class TransportInitAction {
                 @Override
                 protected void initChannel(NioSocketChannel ch) {
                     ch.pipeline()
-                        .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 6, 4))
+                        .addLast(new Spliter())
                         .addLast(new PacketDecoder())
                         .addLast(ServerGetClientInitInfoHandler.INSTANCE)
                         .addLast(ServerTransportTaskReqHandler.INSTANCE)

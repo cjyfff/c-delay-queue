@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSON;
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.transport.handler.PacketEncoder;
+import com.cjyfff.dq.task.transport.handler.Spliter;
 import com.cjyfff.dq.task.transport.handler.client.ClientInitHandler;
 import com.cjyfff.dq.task.transport.handler.PacketDecoder;
 import com.cjyfff.dq.task.transport.handler.client.ClientTransportTaskReqHandler;
@@ -24,7 +25,6 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -115,7 +115,7 @@ public class TransportAction {
                 @Override
                 public void initChannel(SocketChannel ch) {
                     ch.pipeline()
-                        .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 6, 4))
+                        .addLast(new Spliter())
                         .addLast(new PacketDecoder())
                         .addLast(ClientInitHandler.INSTANCE)
                         .addLast(ClientTransportTaskReqHandler.INSTANCE)
