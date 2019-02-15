@@ -31,6 +31,5 @@ public class TransportAsyncBizService {
         } catch (Exception e) {
             log.error("AsyncAcceptInnerMsg get error:", e);
         }
-        log.info("asyncAcceptInnerMsg end, task id: {}", reqPacket.getTaskId());
     }
 }
