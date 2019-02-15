@@ -32,7 +32,7 @@ public class SlaveBeforeUpdateElectionFinishBiz extends NoneBiz{
         log.info("SlaveBeforeUpdateElectionFinishBiz begin...");
         acceptTaskComponent.clearQueue();
 
-        bizComponent.rePushTaskToQueue();
+        bizComponent.reHandleTask();
 
         transportAction.connectAllNodes();
 

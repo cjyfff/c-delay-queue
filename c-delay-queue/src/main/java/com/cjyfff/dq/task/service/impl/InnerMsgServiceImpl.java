@@ -63,7 +63,7 @@ public class InnerMsgServiceImpl implements InnerMsgService {
             throw new ApiException(ErrorCodeMsg.IS_NOT_MY_TASK_CODE, errMsg);
         }
 
-        DelayTask delayTask = delayTaskMapper.selectByTaskIdAndStatus(TaskStatus.TRANSMITING.getStatus(), reqDto.getTaskId(),
+        DelayTask delayTask = delayTaskMapper.selectByTaskIdAndStatus(TaskStatus.TRANSMITTING.getStatus(), reqDto.getTaskId(),
             ShardingInfo.getNodeId());
 
         if (delayTask == null) {

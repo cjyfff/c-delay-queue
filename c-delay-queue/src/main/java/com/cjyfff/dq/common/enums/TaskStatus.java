@@ -9,7 +9,7 @@ public enum TaskStatus {
     POLLING(50, "轮询任务处理中"),
     IN_QUEUE(60, "队列中"),
     PROCESSING(100, "执行中"),
-    TRANSMITING(101, "转发中"),
+    TRANSMITTING(101, "转发中"),
     RETRYING(150, "重试中"),
     PROCESS_SUCCESS(200, "执行成功"),
     PROCESS_FAIL(400, "执行失败"),

@@ -54,7 +54,7 @@ public class MasterBeforeUpdateElectionFinishBiz implements ElectionBiz {
             }
         }
 
-        bizComponent.rePushTaskToQueue();
+        bizComponent.reHandleTask();
 
         transportAction.connectAllNodes();
 

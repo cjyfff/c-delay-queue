@@ -92,7 +92,7 @@ public class PublicMsgServiceImpl implements PublicMsgService {
         } else {
             // 转发到对应机器
 
-            msgServiceComponent.createTaskCommit(reqDto, TaskStatus.TRANSMITING);
+            msgServiceComponent.createTaskCommit(reqDto, TaskStatus.TRANSMITTING);
 
             sendInnerTaskMsg(reqDto);
         }

@@ -1,5 +1,6 @@
 package com.cjyfff.dq.task.biz;
 
+import java.util.Date;
 import java.util.List;
 
 import com.cjyfff.election.core.info.ShardingInfo;
@@ -22,12 +23,20 @@ public class BizComponent {
     private DelayTaskMapper delayTaskMapper;
 
     @Autowired
-    private AcceptTaskComponent acceptTaskComponent;
-
-    @Autowired
     private ExecLogComponent execLogComponent;
 
-    void rePushTaskToQueue() {
+    @Autowired
+    private AcceptTaskComponent acceptTaskComponent;
+
+    void reHandleTask() {
+
+        reHandleTransmittingTask();
+
+        rePushTaskToQueue();
+    }
+
+
+    private void rePushTaskToQueue() {
         List<DelayTask> myDelayTaskList = delayTaskMapper.selectByStatusAndShardingId(
             TaskStatus.IN_QUEUE.getStatus(), ShardingInfo.getNodeId());
 
@@ -37,6 +46,22 @@ public class BizComponent {
 
             execLogComponent.insertLog(delayTask, TaskStatus.IN_QUEUE.getStatus(),
                 String.format("push task in queue when init: %s", delayTask.getTaskId()));
+        }
+    }
+
+    private void reHandleTransmittingTask() {
+        List<DelayTask> transmittingDelayTaskList = delayTaskMapper.selectByStatusAndShardingId(
+            TaskStatus.TRANSMITTING.getStatus(), ShardingInfo.getNodeId());
+
+        for (DelayTask delayTask : transmittingDelayTaskList) {
+            if (acceptTaskComponent.checkNeedToPushQueueNow(delayTask.getDelayTime())) {
+                delayTask.setStatus(TaskStatus.IN_QUEUE.getStatus());
+            } else {
+                delayTask.setStatus(TaskStatus.POLLING.getStatus());
+            }
+
+            delayTask.setModifiedAt(new Date());
+            delayTaskMapper.updateByPrimaryKeySelective(delayTask);
         }
     }
 }
