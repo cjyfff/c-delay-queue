@@ -9,6 +9,7 @@ import com.cjyfff.dq.common.lock.ZkLock;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.service.InnerMsgService;
+import com.cjyfff.dq.task.service.component.MsgServiceComponent;
 import com.cjyfff.dq.task.vo.dto.InnerMsgDto;
 import com.cjyfff.election.config.ZooKeeperClient;
 import com.cjyfff.election.core.info.ShardingInfo;

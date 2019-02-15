@@ -6,6 +6,9 @@ import com.alibaba.fastjson.JSON;
 
 import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
+import com.cjyfff.dq.task.service.component.InnerMsgRecord;
+import com.cjyfff.dq.task.service.component.InnerMsgRecord.InnerMsgRecordVo;
+import com.cjyfff.dq.task.service.component.MsgServiceComponent;
 import com.cjyfff.dq.task.transport.action.TransportAction;
 import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
@@ -115,7 +118,10 @@ public class PublicMsgServiceImpl implements PublicMsgService {
         reqPacket.setNodeId(ShardingInfo.getNodeId());
         reqPacket.setType(PacketType.TASK_TRANSPORT_REQ);
 
-        // todo: 添加上发送成功校验
+        // 记录发送信息
+        InnerMsgRecord.innerMsgRecordMap.put(reqDto.getTaskId(),
+            new InnerMsgRecordVo(System.currentTimeMillis(), targetShardingId, reqPacket));
+
         transportAction.sendMsg(targetShardingId, reqPacket);
     }
 }

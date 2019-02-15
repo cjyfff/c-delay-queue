@@ -1,5 +1,6 @@
 package com.cjyfff.dq.task.transport.handler.client;
 
+import com.cjyfff.dq.task.service.component.InnerMsgRecord;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportRespPacket;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -17,6 +18,9 @@ public class ClientTransportTaskRespHandler extends SimpleChannelInboundHandler<
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TaskTransportRespPacket respPacket) {
+
+        InnerMsgRecord.innerMsgRecordMap.remove(respPacket.getTaskId());
+
         log.debug("ClientTransportTaskRespHandler get data -> {}", respPacket.getResult());
     }
 }

@@ -1,4 +1,4 @@
-package com.cjyfff.dq.task.service.impl;
+package com.cjyfff.dq.task.service.component;
 
 import java.util.Date;
 
@@ -31,7 +31,7 @@ public class MsgServiceComponent {
     @Autowired
     private ExecLogComponent execLogComponent;
 
-    void doPush2Queue(DelayTask delayTask) {
+    public void doPush2Queue(DelayTask delayTask) {
         QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());
         acceptTaskComponent.pushToQueue(task);
         delayTask.setStatus(TaskStatus.IN_QUEUE.getStatus());
@@ -42,7 +42,7 @@ public class MsgServiceComponent {
             String.format("In Queue: %s", delayTask.getTaskId()));
     }
 
-    void doPush2Polling(DelayTask delayTask) {
+    public void doPush2Polling(DelayTask delayTask) {
         delayTask.setStatus(TaskStatus.POLLING.getStatus());
         delayTask.setModifiedAt(new Date());
         delayTaskMapper.updateByPrimaryKeySelective(delayTask);
@@ -55,7 +55,7 @@ public class MsgServiceComponent {
      * 调用方会重复发送请求，这样的话任务就会重复被创建
      * @param reqDto
      */
-    DelayTask createTask(BaseMsgDto reqDto, TaskStatus taskStatus) throws Exception {
+    public DelayTask createTask(BaseMsgDto reqDto, TaskStatus taskStatus) throws Exception {
         DelayTask oldDelayTask = delayTaskMapper.selectByTaskIdForUpdate(reqDto.getTaskId());
         if (oldDelayTask != null) {
             throw new ApiException(ErrorCodeMsg.TASK_ID_EXIST_CODE, ErrorCodeMsg.TASK_ID_EXIST_MSG);
