@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSON;
 
 import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
-import com.cjyfff.dq.task.service.MsgServiceComponent;
 import com.cjyfff.dq.task.transport.action.TransportAction;
 import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;

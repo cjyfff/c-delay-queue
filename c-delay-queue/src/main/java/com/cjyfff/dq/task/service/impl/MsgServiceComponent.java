@@ -10,7 +10,6 @@ import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.queue.QueueTask;
-import com.cjyfff.dq.task.service.MsgServiceComponent;
 import com.cjyfff.dq.task.vo.dto.BaseMsgDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by jiashen on 18-12-20.
  */
 @Component
-public class MsgServiceComponentImpl implements MsgServiceComponent {
+public class MsgServiceComponent {
 
     @Autowired
     private AcceptTaskComponent acceptTaskComponent;
@@ -32,8 +31,7 @@ public class MsgServiceComponentImpl implements MsgServiceComponent {
     @Autowired
     private ExecLogComponent execLogComponent;
 
-    @Override
-    public void doPush2Queue(DelayTask delayTask) {
+    void doPush2Queue(DelayTask delayTask) {
         QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());
         acceptTaskComponent.pushToQueue(task);
         delayTask.setStatus(TaskStatus.IN_QUEUE.getStatus());
@@ -44,8 +42,7 @@ public class MsgServiceComponentImpl implements MsgServiceComponent {
             String.format("In Queue: %s", delayTask.getTaskId()));
     }
 
-    @Override
-    public void doPush2Polling(DelayTask delayTask) {
+    void doPush2Polling(DelayTask delayTask) {
         delayTask.setStatus(TaskStatus.POLLING.getStatus());
         delayTask.setModifiedAt(new Date());
         delayTaskMapper.updateByPrimaryKeySelective(delayTask);
@@ -58,8 +55,7 @@ public class MsgServiceComponentImpl implements MsgServiceComponent {
      * 调用方会重复发送请求，这样的话任务就会重复被创建
      * @param reqDto
      */
-    @Override
-    public DelayTask createTask(BaseMsgDto reqDto, TaskStatus taskStatus) throws Exception {
+    DelayTask createTask(BaseMsgDto reqDto, TaskStatus taskStatus) throws Exception {
         DelayTask oldDelayTask = delayTaskMapper.selectByTaskIdForUpdate(reqDto.getTaskId());
         if (oldDelayTask != null) {
             throw new ApiException(ErrorCodeMsg.TASK_ID_EXIST_CODE, ErrorCodeMsg.TASK_ID_EXIST_MSG);
@@ -92,7 +88,6 @@ public class MsgServiceComponentImpl implements MsgServiceComponent {
      * @param taskStatus
      * @return
      */
-    @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
     public DelayTask createTaskCommit(BaseMsgDto reqDto, TaskStatus taskStatus) throws Exception {
         return createTask(reqDto, taskStatus);
