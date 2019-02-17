@@ -84,12 +84,7 @@ public class TransportAction {
             if (future.isSuccess()) {
                 log.debug("Success to send Msg, target node id: {}", nodeId);
             } else {
-                String packetStr;
-                if (packet == null) {
-                    packetStr = "";
-                } else {
-                    packetStr = JSON.toJSONString(packet);
-                }
+                String packetStr = JSON.toJSONString(packet);
                 log.error("Fail to send Msg, msg data:{}", packetStr);
             }
         });
