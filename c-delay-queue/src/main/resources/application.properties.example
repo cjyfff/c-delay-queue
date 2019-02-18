@@ -20,6 +20,10 @@ delay_queue.task_rate_limit_permits=1000
 # 从数据库中取出任务插入延时队列的定时任务执行间隔，单位秒
 delay_queue.critical_polling_time=1800
 
+# spring cloud settings
+spring.application.name=delay-queue-service
+eureka.client.serviceUrl.defaultZone=http://localhost:8810/eureka/
+
 
 jdbc.driverClassName=com.mysql.jdbc.Driver
 
