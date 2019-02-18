@@ -1,0 +1,7 @@
+server.port=8820
+
+spring.application.name=api-zuul
+eureka.client.serviceUrl.defaultZone=http://10.7.205.223:8810/eureka/
+
+zuul.routes.feign.path=/api-feign/**
+zuul.routes.feign.serviceId=api-feign

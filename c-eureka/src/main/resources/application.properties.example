@@ -1,0 +1,7 @@
+server.port=8810
+
+spring.application.name=c-eureka
+
+eureka.client.register-with-eureka=true
+eureka.client.fetch-registry=true
+eureka.client.serviceUrl.defaultZone=http://localhost:8810/eureka/,http://10.7.205.223:8810/eureka/

@@ -1,7 +1,8 @@
 import requests
 import uuid
+import time
 
-URL = 'http://10.7.247.119:9999/dq/acceptMsg'
+URL = 'http://127.0.0.1:8820/api-feign/dq/acceptMsg'
 
 
 def main():
@@ -17,7 +18,9 @@ def main():
             "nonceStr": uuid.uuid4().hex
         }
 
-        requests.post(URL, json=data)
+        resp = requests.post(URL, json=data)
+        print(resp.json())
+	time.sleep(0.05)
 
 
 if __name__ == '__main__':
