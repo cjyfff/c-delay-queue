@@ -2,3 +2,4 @@ server.port=8801
 
 spring.application.name=api-feign
 eureka.client.serviceUrl.defaultZone=http://10.7.205.223:8810/eureka/
+
