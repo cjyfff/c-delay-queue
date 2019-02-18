@@ -1,7 +1,9 @@
 server.port=8888
 
-# 指定本机服务端口，一般与`server.port`一致
-l_election.specified_port=8888
+logging.level.com.cjyfff=debug
+
+# 指定与其他各节点通信的端口
+l_election.specified_port=9999
 # 指定本机ip，不指定的话将自动检测，自动检测时假如本机拥有多个ip可能会获取到错误的ip
 l_election.specified_local_ip=
 l_election.zk_host=192.168.43.9:2181,192.168.43.42:2181,192.168.43.241:2181

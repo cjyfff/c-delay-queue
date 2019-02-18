@@ -1,11 +1,18 @@
 package com.cjyfff.dq.task.service.impl;
 
+import com.cjyfff.dq.common.TaskConfig;
+import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.component.AcceptTaskComponent;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
+import com.cjyfff.dq.common.lock.ZkLock;
+import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.service.InnerMsgService;
+import com.cjyfff.dq.task.service.component.MsgServiceComponent;
 import com.cjyfff.dq.task.vo.dto.InnerMsgDto;
+import com.cjyfff.election.config.ZooKeeperClient;
+import com.cjyfff.election.core.info.ShardingInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,9 +31,30 @@ public class InnerMsgServiceImpl implements InnerMsgService {
     @Autowired
     private MsgServiceComponent msgServiceComponent;
 
+    @Autowired
+    private DelayTaskMapper delayTaskMapper;
+
+    @Autowired
+    private ZkLock zkLock;
+
+    @Autowired
+    private ZooKeeperClient zooKeeperClient;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void acceptMsg(InnerMsgDto reqDto) throws Exception {
+        try {
+            if (! zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr())) {
+                throw new ApiException(ErrorCodeMsg.TASK_IS_PROCESSING_CODE, ErrorCodeMsg.TASK_IS_PROCESSING_MSG);
+            }
+            doAcceptMsg(reqDto);
+
+        } finally {
+            zkLock.tryUnlock(TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
+        }
+    }
+
+    private void doAcceptMsg(InnerMsgDto reqDto) throws Exception {
         acceptTaskComponent.checkElectionStatus();
 
         if (! acceptTaskComponent.checkIsMyTask(reqDto.getTaskId())) {
@@ -35,7 +63,12 @@ public class InnerMsgServiceImpl implements InnerMsgService {
             throw new ApiException(ErrorCodeMsg.IS_NOT_MY_TASK_CODE, errMsg);
         }
 
-        DelayTask delayTask = msgServiceComponent.createTask(reqDto);
+        DelayTask delayTask = delayTaskMapper.selectByTaskIdAndStatus(TaskStatus.TRANSMITTING.getStatus(), reqDto.getTaskId(),
+            ShardingInfo.getNodeId());
+
+        if (delayTask == null) {
+            throw new ApiException(ErrorCodeMsg.CAN_NOT_FIND_TASK_ERROR_CODE, ErrorCodeMsg.CAN_NOT_FIND_TASK_ERROR_MSG);
+        }
 
         if (acceptTaskComponent.checkNeedToPushQueueNow(reqDto.getDelayTime())) {
             msgServiceComponent.doPush2Queue(delayTask);

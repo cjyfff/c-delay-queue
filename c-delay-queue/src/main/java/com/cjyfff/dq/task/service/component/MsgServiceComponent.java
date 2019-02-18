@@ -1,4 +1,4 @@
-package com.cjyfff.dq.task.service.impl;
+package com.cjyfff.dq.task.service.component;
 
 import java.util.Date;
 
@@ -13,6 +13,8 @@ import com.cjyfff.dq.task.queue.QueueTask;
 import com.cjyfff.dq.task.vo.dto.BaseMsgDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by jiashen on 18-12-20.
@@ -29,7 +31,7 @@ public class MsgServiceComponent {
     @Autowired
     private ExecLogComponent execLogComponent;
 
-    void doPush2Queue(DelayTask delayTask) {
+    public void doPush2Queue(DelayTask delayTask) {
         QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());
         acceptTaskComponent.pushToQueue(task);
         delayTask.setStatus(TaskStatus.IN_QUEUE.getStatus());
@@ -40,7 +42,7 @@ public class MsgServiceComponent {
             String.format("In Queue: %s", delayTask.getTaskId()));
     }
 
-    void doPush2Polling(DelayTask delayTask) {
+    public void doPush2Polling(DelayTask delayTask) {
         delayTask.setStatus(TaskStatus.POLLING.getStatus());
         delayTask.setModifiedAt(new Date());
         delayTaskMapper.updateByPrimaryKeySelective(delayTask);
@@ -53,7 +55,7 @@ public class MsgServiceComponent {
      * 调用方会重复发送请求，这样的话任务就会重复被创建
      * @param reqDto
      */
-    DelayTask createTask(BaseMsgDto reqDto) throws Exception {
+    public DelayTask createTask(BaseMsgDto reqDto, TaskStatus taskStatus) throws Exception {
         DelayTask oldDelayTask = delayTaskMapper.selectByTaskIdForUpdate(reqDto.getTaskId());
         if (oldDelayTask != null) {
             throw new ApiException(ErrorCodeMsg.TASK_ID_EXIST_CODE, ErrorCodeMsg.TASK_ID_EXIST_MSG);
@@ -68,15 +70,26 @@ public class MsgServiceComponent {
         delayTask.setRetryInterval(reqDto.getRetryInterval());
         delayTask.setDelayTime(reqDto.getDelayTime());
         delayTask.setExecuteTime(System.currentTimeMillis() / 1000 + reqDto.getDelayTime());
-        delayTask.setStatus(TaskStatus.ACCEPT.getStatus());
+        delayTask.setStatus(taskStatus.getStatus());
         delayTask.setCreatedAt(new Date());
         delayTask.setModifiedAt(new Date());
-        delayTask.setShardingId(acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId()).byteValue());
+        delayTask.setShardingId(acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId()));
 
         delayTaskMapper.insert(delayTask);
 
         execLogComponent.insertLog(delayTask, TaskStatus.ACCEPT.getStatus(), String.format("Insert task: %s", reqDto.getTaskId()));
 
         return delayTask;
+    }
+
+    /**
+     * 开启一个新的事务，进行任务创建，调用方即时出现异常，创建的数据也不回滚
+     * @param reqDto
+     * @param taskStatus
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
+    public DelayTask createTaskCommit(BaseMsgDto reqDto, TaskStatus taskStatus) throws Exception {
+        return createTask(reqDto, taskStatus);
     }
 }

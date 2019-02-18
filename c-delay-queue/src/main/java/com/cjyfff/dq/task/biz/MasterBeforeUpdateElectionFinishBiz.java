@@ -1,6 +1,8 @@
 package com.cjyfff.dq.task.biz;
 
 import java.util.List;
+
+import com.cjyfff.dq.task.transport.action.TransportAction;
 import com.cjyfff.election.biz.ElectionBiz;
 import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.component.AcceptTaskComponent;
@@ -33,6 +35,9 @@ public class MasterBeforeUpdateElectionFinishBiz implements ElectionBiz {
     @Autowired
     private BizComponent bizComponent;
 
+    @Autowired
+    private TransportAction transportAction;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void run() {
@@ -42,14 +47,16 @@ public class MasterBeforeUpdateElectionFinishBiz implements ElectionBiz {
         List<DelayTask> delayTasks = delayTaskMapper.selectByStatusForUpdate(TaskStatus.ACCEPT.getStatus());
 
         for (DelayTask delayTask : delayTasks) {
-            Byte newShardingId = acceptTaskComponent.getShardingIdByTaskId(delayTask.getTaskId()).byteValue();
+            Byte newShardingId = acceptTaskComponent.getShardingIdByTaskId(delayTask.getTaskId());
             if (! newShardingId.equals(delayTask.getShardingId())) {
                 delayTask.setShardingId(newShardingId);
                 delayTaskMapper.updateByPrimaryKeySelective(delayTask);
             }
         }
 
-        bizComponent.rePushTaskToQueue();
+        bizComponent.reHandleTask();
+
+        transportAction.connectAllNodes();
 
         logger.info("MasterBeforeElectionFinishBiz end...");
     }

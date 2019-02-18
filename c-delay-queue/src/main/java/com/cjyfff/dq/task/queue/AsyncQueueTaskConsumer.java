@@ -28,9 +28,6 @@ public class AsyncQueueTaskConsumer {
     private DelayTaskMapper delayTaskMapper;
 
     @Autowired
-    private ShardingInfo shardingInfo;
-
-    @Autowired
     private TaskHandlerContext taskHandlerContext;
 
     @Autowired
@@ -41,13 +38,13 @@ public class AsyncQueueTaskConsumer {
 
     @Async("taskConsumerExecutor")
     @Transactional(rollbackFor = Exception.class)
-    void doConsumer(QueueTask task) {
+    public void doConsumer(QueueTask task) {
         // 1、乐观锁更新状态
         // 2、用task id 查出数据
         // 3、处理
         // 4、修改状态
         if (delayTaskMapper.updateStatusByTaskIdAndOldStatus(task.getTaskId(), TaskStatus.IN_QUEUE.getStatus(),
-            TaskStatus.PROCESSING.getStatus(), shardingInfo.getNodeId().byteValue()) > 0) {
+            TaskStatus.PROCESSING.getStatus(), ShardingInfo.getNodeId()) > 0) {
 
             DelayTask delayTask = delayTaskMapper.selectByTaskId(task.getTaskId());
 
