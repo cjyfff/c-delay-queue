@@ -13,6 +13,7 @@ import com.cjyfff.dq.task.transport.handler.client.ClientInitHandler;
 import com.cjyfff.dq.task.transport.handler.PacketDecoder;
 import com.cjyfff.dq.task.transport.handler.client.ClientTransportTaskReqHandler;
 import com.cjyfff.dq.task.transport.handler.client.ClientTransportTaskRespHandler;
+import com.cjyfff.dq.task.transport.info.EventLoopGroupInfo;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
 import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
 import com.cjyfff.dq.task.transport.protocol.Packet;
@@ -22,6 +23,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -54,7 +56,11 @@ public class TransportAction {
                 // 连接其他节点netty服务
                 String serverHost = info.getValue().split(":")[0];
                 int serverPort = Integer.valueOf(info.getValue().split(":")[1]);
-                connectServer(info.getKey(), serverHost, serverPort);
+                try {
+                    connectServer(info.getKey(), serverHost, serverPort);
+                } catch (Exception e) {
+                    log.error("Connect to node method get error:", e);
+                }
 
             }
         }
@@ -96,8 +102,12 @@ public class TransportAction {
         }
     }
 
-    private void connectServer(Byte serverNodeId, String serverHost, int serverPort) {
-        NioEventLoopGroup workerGroup = new NioEventLoopGroup();
+    private void connectServer(Byte serverNodeId, String serverHost, int serverPort) throws Exception {
+        EventLoopGroup workerGroup = EventLoopGroupInfo.clientNioEventLoopGroup;
+
+        if (workerGroup == null) {
+            throw new ApiException(ErrorCodeMsg.SYSTEM_ERROR_CODE, "Client worker group is not initialize...");
+        }
 
         Bootstrap bootstrap = new Bootstrap();
         bootstrap

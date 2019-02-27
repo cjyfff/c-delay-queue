@@ -6,6 +6,7 @@ import com.cjyfff.dq.task.transport.handler.Spliter;
 import com.cjyfff.dq.task.transport.handler.server.ServerGetClientInitInfoHandler;
 import com.cjyfff.dq.task.transport.handler.server.ServerTransportTaskReqHandler;
 import com.cjyfff.dq.task.transport.handler.server.ServerTransportTaskRespHandler;
+import com.cjyfff.dq.task.transport.info.EventLoopGroupInfo;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -27,12 +28,17 @@ public class TransportInitAction {
     private int transportPort;
 
     public void startServer() {
-        NioEventLoopGroup boosGroup = new NioEventLoopGroup();
-        NioEventLoopGroup workerGroup = new NioEventLoopGroup();
+        NioEventLoopGroup serverBoosGroup = new NioEventLoopGroup();
+        NioEventLoopGroup serverWorkerGroup = new NioEventLoopGroup();
+        NioEventLoopGroup clientWorkerGroup = new NioEventLoopGroup();
+
+        EventLoopGroupInfo.serverBoosGroup = serverBoosGroup;
+        EventLoopGroupInfo.serverWorkerGroup = serverWorkerGroup;
+        EventLoopGroupInfo.clientNioEventLoopGroup = clientWorkerGroup;
 
         final ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap
-            .group(boosGroup, workerGroup)
+            .group(serverBoosGroup, serverWorkerGroup)
             .channel(NioServerSocketChannel.class)
             .option(ChannelOption.SO_BACKLOG, 1024)
             .childOption(ChannelOption.SO_KEEPALIVE, true)
