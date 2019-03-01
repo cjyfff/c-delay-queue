@@ -1,5 +1,7 @@
 package com.cjyfff.dq.task.service.impl;
 
+import java.util.concurrent.TimeUnit;
+
 import com.cjyfff.dq.common.TaskConfig;
 import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ApiException;
@@ -63,6 +65,7 @@ public class InnerMsgServiceImpl implements InnerMsgService {
             throw new ApiException(ErrorCodeMsg.IS_NOT_MY_TASK_CODE, errMsg);
         }
 
+        // 从主库拿任务信息，不会存在主从未同步的延时问题
         DelayTask delayTask = delayTaskMapper.selectByTaskIdAndStatus(TaskStatus.TRANSMITTING.getStatus(), reqDto.getTaskId(),
             ShardingInfo.getNodeId());
 
