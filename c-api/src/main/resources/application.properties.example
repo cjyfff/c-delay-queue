@@ -1,5 +1,12 @@
 server.port=8801
 
+feign.hystrix.enabled=true
+
+hystrix.threadpool.delay-queue-service.coreSize=10
+hystrix.threadpool.delay-queue-service.maximumSize=15
+hystrix.threadpool.delay-queue-service.keepAliveTimeMinutes=1
+hystrix.threadpool.delay-queue-service.allowMaximumSizeToDivergeFromCoreSize=true
+
 spring.application.name=api-feign
 eureka.client.serviceUrl.defaultZone=http://10.7.205.223:8810/eureka/
 
