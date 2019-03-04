@@ -1,7 +1,5 @@
 package com.cjyfff.dq.task.service.impl;
 
-import java.util.concurrent.TimeUnit;
-
 import com.cjyfff.dq.common.TaskConfig;
 import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ApiException;
