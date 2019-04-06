@@ -15,7 +15,7 @@
 
 
 ## 原理 & Wiki
-[Wiki](https://github.com/cjyfff/c-delay-queue/wiki)
+  [Wiki](https://github.com/cjyfff/c-delay-queue/wiki/%E5%8E%9F%E7%90%86%E7%AE%80%E8%BF%B0)
 
 
 ## 依赖组件
