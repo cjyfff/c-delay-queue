@@ -14,6 +14,10 @@
 6. 各节点间使用Netty实现异步高效通信
 
 
+## 原理 & Wiki
+[Wiki](https://github.com/cjyfff/c-delay-queue/wiki)
+
+
 ## 依赖组件
 1. MySQL 5.6+
 2. Zookeeper 3.4 不支持3.5
