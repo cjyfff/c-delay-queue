@@ -20,8 +20,8 @@ public class SpringAsyncTaskExecutorConfig implements AsyncConfigurer {
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
 
-        taskExecutor.setCorePoolSize(10);
-        taskExecutor.setMaxPoolSize(20);
+        taskExecutor.setCorePoolSize(5);
+        taskExecutor.setMaxPoolSize(10);
         taskExecutor.setQueueCapacity(100);
         taskExecutor.setKeepAliveSeconds(10);
         taskExecutor.setRejectedExecutionHandler(new CallerRunsPolicy());

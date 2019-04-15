@@ -17,9 +17,9 @@ public class TaskConsumerExecutorConfig {
     public Executor taskConsumerExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
 
-        taskExecutor.setCorePoolSize(50);
-        taskExecutor.setMaxPoolSize(100);
-        taskExecutor.setQueueCapacity(500);
+        taskExecutor.setCorePoolSize(10);
+        taskExecutor.setMaxPoolSize(20);
+        taskExecutor.setQueueCapacity(1000);
         taskExecutor.setKeepAliveSeconds(10);
         taskExecutor.setRejectedExecutionHandler(new CallerRunsPolicy());
         taskExecutor.setThreadNamePrefix("TaskConsumer-");
