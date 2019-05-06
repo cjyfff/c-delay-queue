@@ -17,13 +17,16 @@ public class NodeChannelInfo {
     @Getter
     @Setter
     public static class OneNodeChannelInfo {
-        public OneNodeChannelInfo(Channel channel, boolean server) {
+        public OneNodeChannelInfo(Channel channel, boolean con2server) {
             this.channel = channel;
-            this.server = server;
+            this.con2server = con2server;
         }
 
         private Channel channel;
 
-        private boolean server;
+        /**
+        标记是否连接到server端
+         */
+        private boolean con2server;
     }
 }
