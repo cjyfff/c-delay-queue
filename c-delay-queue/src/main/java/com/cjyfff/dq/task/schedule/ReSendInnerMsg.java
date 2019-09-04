@@ -28,11 +28,12 @@ public class ReSendInnerMsg {
         log.debug("Start to execute ReSendInnerMsg...");
 
         for (Entry<String, InnerMsgRecordVo> record : InnerMsgRecord.innerMsgRecordMap.entrySet()) {
-            if (System.currentTimeMillis() - record.getValue().getSendTime() > INNER_MSG_TIME_OUT_SECONDS * 1000) {
+            long nowMillis = System.currentTimeMillis();
+            if (nowMillis - record.getValue().getSendTime() > INNER_MSG_TIME_OUT_SECONDS * 1000) {
                 log.info("Start to re-send msg, task id: {}", record.getKey());
                 try {
                     transportAction.sendMsg(record.getValue().getTargetShardingId(), record.getValue().getReqPacket());
-                    record.getValue().setSendTime(System.currentTimeMillis());
+                    record.getValue().setSendTime(nowMillis);
                 } catch (Exception e) {
                     log.error("transportAction sendMsg method get error: ", e);
                 }
