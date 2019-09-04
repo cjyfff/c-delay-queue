@@ -23,12 +23,9 @@ public class ProjectTerminator implements ApplicationListener<ContextClosedEvent
     public void onApplicationEvent(ContextClosedEvent event) {
         log.debug("Begin to terminate project...");
 
-        new Thread(() -> {
-            shutdownEventLoopGroup(EventLoopGroupInfo.serverBoosGroup);
-            shutdownEventLoopGroup(EventLoopGroupInfo.serverWorkerGroup);
-            shutdownEventLoopGroup(EventLoopGroupInfo.clientNioEventLoopGroup);
-        }).start();
-
+        shutdownEventLoopGroup(EventLoopGroupInfo.serverBoosGroup);
+        shutdownEventLoopGroup(EventLoopGroupInfo.serverWorkerGroup);
+        shutdownEventLoopGroup(EventLoopGroupInfo.clientNioEventLoopGroup);
 
         zooKeeperClient.close();
     }
