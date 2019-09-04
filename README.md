@@ -1,36 +1,96 @@
-## 原理简述
-本文简述一下此系统的工作原理
+# c-delay-queue
+一个基于Zookeeper和Spring Boot的分布式延时队列服务系统
 
-### 0.总述
-本系统可以以分布式集群的方式部署，当系统的每个节点启动时，都会触发选举逻辑，系统通过Zookeeper进行选举。选举出来的master负责统计节点的信息，并且给每个节点分配一个节点id。任务将根据任务的task id对节点数目取模再和节点id进行匹配来决定。系统的每一个节点，当接收到一个任务后，都会判断一下是不是应该自己处理，不是的话，会转发给应该处理的节点。
-假设集群包括两个处理节点，系统的架构图如下：
-
-![总体架构](https://github.com/cjyfff/c-delay-queue/blob/master/principle/img/%E6%80%BB%E4%BD%93%E6%9E%B6%E6%9E%84.png)
+## 前言
+在项目中经常有这样的需求：我们需要在某个时间之后之后执行一个任务。这些任务可能只会需要执行一次，是临时性的，因此使用各种定时任务中间件就显得很不合适，因为定时任务的一个特点就是没经过一个时间间隔，任务就被重复执行。而且定时任务系统需要不断的轮询任务，检查执行时间是否到达，这也会造成服务器CPU资源的浪费。因此，我们会需要一个任务系统，高效、准确地执行这些一次性的延时任务。
 
 
-### 1. 接收任务流程
-接收任务的流程如下图。主要的判断逻辑是：“判断选举是否完成”-->“判断是否自己处理的任务”-->“判断是否需要马上放入队列”。
-说明一下“判断是否需要马上放入队列”这一步。由于任务有可能是指定很长的时间之后才执行，为了避免这些远未达到执行时间任务放在延时队列（jdk自带的DelayQueue）里耗费内存资源，系统有一个指定时间（delay_queue.critical_polling_time），在这个时间内会被执行的任务才会放到DelayQueue中。假如不是在这个时间内会被执行的任务，只会保存在数据库中，且任务状态设为“待轮询”，由定时任务检测，等到该任务会在delay_queue.critical_polling_time指定的时间内执行时，才被加载到DelayQueue中。
+## 系统目标
+1. 服务部署在多个节点上，通过Zookeeper实现节点选举
+2. 对任务数据进行分片，各个节点均衡地处理分配给自己的任务
+3. 集群系统保证高可用，任一节点的宕机不影响系统运作
+4. 保证任务会被执行，并且只执行一次
+5. 突发大量请求时，服务降级
+6. 各节点间使用Netty实现异步高效通信
 
-![接收任务流程](https://github.com/cjyfff/c-delay-queue/blob/master/principle/img/%E6%8E%A5%E6%94%B6%E4%BB%BB%E5%8A%A1%E6%B5%81%E7%A8%8B.png)
 
-### 2. 定时任务流程
-正如上文所说，定时任务的主要作用是把delay_queue.critical_polling_time时间内的、“待轮询”状态的任务加载到DelayQueue，详细流程如下图。
+## 原理 & Wiki
+  [Wiki](https://github.com/cjyfff/c-delay-queue/wiki/%E5%8E%9F%E7%90%86%E7%AE%80%E8%BF%B0)
 
-![定时任务](https://github.com/cjyfff/c-delay-queue/blob/master/principle/img/%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E6%B5%81%E7%A8%8B.png)
 
-### 3. DelayQueue消费流程
-加载到DelayQueue中的任务，当时间到达时，会执行以下逻辑，进行任务消费。
+## 依赖组件
+1. MySQL 5.6+
+2. Zookeeper 3.4 不支持3.5
 
-![队列消费](https://github.com/cjyfff/c-delay-queue/blob/master/principle/img/%E9%98%9F%E5%88%97%E6%B6%88%E8%B4%B9%E6%B5%81%E7%A8%8B.png)
+## 运行、部署步骤
+1. 下载[l-election选举sdk](https://github.com/cjyfff/l-election.git)，安装到本地mvn仓库
+2. 根据本项目的`scripts/db.sql`创建数据库和数据表
+3. 修改本项目中`src/main/resources/application.properties.example`，重命名为`application.properties`，并修改相关配置。主要需要修改的项为：
+* `l_election.specified_local_ip`，指定本机ip，不指定的话将自动检测，自动检测时假如本机拥有多个ip可能会获取到错误的ip
+* `l_election.specified_port`，指定本机服务端口，一般与`server.port`一致
+* `l_election.zk_host`，zookeeper地址以及端口，假如是集群的话使用逗号分隔，如`192.168.43.9:2181,192.168.43.42:2181,192.168.43.241:2181`
+* `jdbc.write.url`和`jdbc.read.url`，写库以及读库uri，假如没有读写分类数据库的话可以指定为同一个数据库
+4. 接下来就可以编译运行本项目
 
-### 4.节点变更逻辑
-当集群的节点发生改变，预示着任务和节点的对应关系已经不准确，并且有可能节点的主从身份也发生了变化，因此系统需要重新判断是否需要重新选主，并且master需要对数据库中未处理的任务，进行重新分片，分派新的节点进行处理。具体流程如下图，master和slave身份的节点各自执行不同的逻辑。
 
-![节点变更](https://github.com/cjyfff/c-delay-queue/blob/master/principle/img/%E8%8A%82%E7%82%B9%E5%8F%98%E6%9B%B4%E6%B5%81%E7%A8%8B.png)
+## 接口调用方法
+1. 新增任务接口
+调用`/dq/acceptMsg`接口进行新增任务，参数使用json传输，具体参数如下：
 
-### 5.节点间通信逻辑
-5.1 每个节点都会作为Netty服务端，在节点初始化时监听指定端口。
-5.2 每个节点在每次选举完后都会连接其他节点，使得所有节点都能互相通信。具体逻辑是：选举完毕后，每个节点都能拿到所有节点的ip信息，每个节点去连接比自身的node id大的节点，node id排在最后的节点不用再主动连接。例如集群有3个节点，node id分别是1、2、3。那么主动连接的逻辑就是：1->2; 1->3; 2->3。
-5.3 节点间建立连接之后，作为客户端的节点会把自身node id返回给服务端，同时客户端把node id与Netty channel的对应关系保存起来，服务端也把node id与Netty channel的对应关系保存。这样所有节点都有一份node id与Netty channel的对应关系，可以根据node id向指定节点发送消息。
-5.4 由于节点间的任务转发消息采用Netty的异步模式，无法在发送消息后马上知道消息是否接收。为了避免网络抖动等原因造成消息没有成功投放，系统加入了消息确认机制。节点在发送消息时，会把消息的发送时间等信息存放到一个集合里，当对方节点收到消息并响应时，节点会把消息记录从该集合里删除。有一个定时任务会定时检查集合里的消息记录，假如某个消息超过指定时间仍然没有被确认，该消息会被重新发送。
+| 参数名称 | 类型 | 是否必填 | 长度限制（或取值范围） | 说明 |
+| :------: | :------: | :------: | :------: | :-----: |
+| taskId | str |  Y | 32 | 任务识别id，必须保证唯一，建议使用uuid生成 |
+| functionName | str | Y | 1~100 | 调用的服务逻辑类名称，与下文介绍中的`TaskHandler`注解的`value`参数一致 |
+| params | str | N | 0~1000 | 调用服务逻辑的参数字符串 |
+| retryCount | int | N | 取值范围：0~10 | 任务执行失败时的重试次数，不指定代表不重试 |
+| retryInterval | int | N | 取值范围：1~60 | 任务执行失败时的重试间隔，不指定的话设为1，单位秒 |
+| delayTime | int | Y | 取值范围：>1 | 延时时间，单位秒 |
+| nonceStr | str | Y | 32 | 随机字符串，用于接口幂等，当接口请求失败，调用方对接口进行重试时，要带上相同的值 |
+
+调用例子：
+```
+{
+    "taskId": "d610ec9031674206a359f6a1f5afb4a9",
+    "functionName": "exampleHandler",
+    "params": "{}",
+    "retryCount": 0,
+    "retryInterval": 1,
+    "delayTime": 10,
+    "nonceStr": "37140de3f8634ffb98a0eff55b18d37c"
+}
+```
+2. 监控接口
+调用`/monitor/nodeInfo`接口可以查看服务的选举状态以及分片信息，具体例子如下：
+```
+{
+    // 集群分片信息map，key为分片节点id，value为分片节点的ip以及端口
+    "shardingMap": {
+        "0": "192.168.43.221:8888"
+    },
+    // 本机分片id
+    "nodeId": 0,
+    // 本机选举状态，1代表完成，0代表选举未完成
+    "electionStatus": 1,
+    // 本机是否集群的master
+    "leader": true
+}
+```
+
+## 自定义任务方法
+延时任务服务的目的就是让系统可以在指定时间调用指定的服务逻辑，因此定义自己服务逻辑类十分必要。实现的方式可以参考`com.cjyfff.dq.task.handler.impl.ExampleHandler`。有以下几个注意点：
+* 服务逻辑类需要继承`ITaskHandler`接口，并实现`run`方法，系统到达指定时间的时候就会运行`run`方法里的逻辑。
+* 服务逻辑类需要添加`TaskHandler`注解，并且在注解的参数`value`中指定服务名称，调用新增任务接口时是就是通过这个名称找到对应的服务。同时服务逻辑类也需要定义为spring bean使得spring ioc容器能发现这个类。
+* `run`方法中`paras`参数的值对应调用新增任务接口时传入的`paras`值。可以用于任务调用方与任务消费方的参数传递。
+
+## 集群部署方法
+* 基于Zookeeper的特性，节点的选举需要基于不同的ip，因此不能在同一台机器上部署多个本服务的实例
+* 各个节点配置相同zk地址（`l_election.zk_host`）以及数据库地址（`jdbc.write.url`、`jdbc.read.url`），这些节点即可成为一个集群
+* 需要添加节点时，同样只需要配置和集群相同的zk地址以及数据库地址，然后启动节点即可，集群会自动触发选举以及重新分配数据
+* 需要下线一个节点时，直接停止该节点的服务进程即可
+
+## 后续优化
+* 优化数据库性能，或更换为nosql数据库
+* 清除已经处理的任务在数据库中的记录，避免数据库中数据过多影响性能
+* <已优化>~~处理外部请求和处理内部请求分开在不同的线程池中处理，各节点间的通信改为RPC通信~~
+* <已优化>~~优化`com.cjyfff.dq.task.queue.QueueTask`，减少`QueueTask`对象的占用大小~~
+* <已优化>~~线程池分离，不同的业务逻辑使用不同的线程池~~
