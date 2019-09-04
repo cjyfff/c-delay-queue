@@ -48,15 +48,15 @@ public class OrderAutoAuditHandler implements ITaskHandler {
     @Transactional
     public HandlerResult run(String paras) {
 
-            log.info("Run OrderAutoAuditHandler with paras: " + paras);
+        log.info("Run OrderAutoAuditHandler with paras: " + paras);
 
-            OrderAutoAuditHandlerParaVo paraVo = JSON.parseObject(paras, OrderAutoAuditHandlerParaVo.class);
+        OrderAutoAuditHandlerParaVo paraVo = JSON.parseObject(paras, OrderAutoAuditHandlerParaVo.class);
 
-            String orderId = paraVo.getOrderId();
+        String orderId = paraVo.getOrderId();
 
-            if (StringUtils.isEmpty(orderId)) {
-                return new HandlerResult(HandlerResult.DEFAULT_FAIL_CODE, "orderId不能为空");
-            }
+        if (StringUtils.isEmpty(orderId)) {
+            return new HandlerResult(HandlerResult.DEFAULT_FAIL_CODE, "orderId不能为空");
+        }
         try {
             // 一张订单同一时间只可能进行一个操作，因此直接用order id作为lock key，不用考虑状态
             if (zkLock.tryLock(zooKeeperClient.getClient(), ORDER_LOCK_PAHT, orderId, 30)) {
