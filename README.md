@@ -1,6 +1,10 @@
 # c-delay-queue
 一个基于Zookeeper和Spring Boot的分布式延时队列服务系统
 
+## 前言
+在项目中经常有这样的需求：我们需要在某个时间之后之后执行一个任务。这些任务可能只会需要执行一次，是临时性的，因此使用各种定时任务中间件就显得很不合适，因为定时任务的一个特点就是没经过一个时间间隔，任务就被重复执行。而且定时任务系统需要不断的轮询任务，检查执行时间是否到达，这也会造成服务器CPU资源的浪费。因此，我们会需要一个任务系统，高效、准确地执行这些一次性的延时任务。
+
+
 ## 系统目标
 1. 服务部署在多个节点上，通过Zookeeper实现节点选举
 2. 对任务数据进行分片，各个节点均衡地处理分配给自己的任务
@@ -8,6 +12,10 @@
 4. 保证任务会被执行，并且只执行一次
 5. 突发大量请求时，服务降级
 6. 各节点间使用Netty实现异步高效通信
+
+
+## 原理 & Wiki
+  [Wiki](https://github.com/cjyfff/c-delay-queue/wiki/%E5%8E%9F%E7%90%86%E7%AE%80%E8%BF%B0)
 
 
 ## 依赖组件
@@ -42,13 +50,13 @@
 调用例子：
 ```
 {
-	"taskId": "d610ec9031674206a359f6a1f5afb4a9",
-	"functionName": "exampleHandler",
-	"params": "{}",
-	"retryCount": 0,
-	"retryInterval": 1,
-	"delayTime": 10,
-	"nonceStr": "37140de3f8634ffb98a0eff55b18d37c"
+    "taskId": "d610ec9031674206a359f6a1f5afb4a9",
+    "functionName": "exampleHandler",
+    "params": "{}",
+    "retryCount": 0,
+    "retryInterval": 1,
+    "delayTime": 10,
+    "nonceStr": "37140de3f8634ffb98a0eff55b18d37c"
 }
 ```
 2. 监控接口

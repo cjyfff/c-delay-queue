@@ -46,7 +46,8 @@ druidOption.exclusions=*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*
 druidOption.setTestWhileIdle=true
 druidOption.setMaxWait=60000
 druidOption.setMinIdle=5
-druidOption.setMaxActive=20
+# 根据((核心数 * 2) + 有效磁盘数)配置
+druidOption.setMaxActive=9
 druidOption.setPoolPreparedStatements=true
 druidOption.setMaxPoolPreparedStatementPerConnectionSize=20
 druidOption.setMaxOpenPreparedStatements=100
