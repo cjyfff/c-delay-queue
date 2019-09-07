@@ -3,6 +3,7 @@ package com.cjyfff.dq.common.lock;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.cjyfff.dq.common.lock.ZkLockImpl.LockObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.StringUtils;
@@ -18,27 +19,19 @@ public class UnlockAfterDbCommitInfoHolder {
      */
     private static Map<String, UnlockAfterDbCommitInfo> infoMap = new ConcurrentHashMap<>(1366);
 
-    public static void setInfo2Holder(String lockPath, String lockKey, boolean needUnlock) {
-
-        if (StringUtils.isEmpty(lockPath) || StringUtils.isEmpty(lockKey)) {
-            throw new IllegalArgumentException("Parameters lockPath and LockKey can not be null");
-        }
-
-        if (! lockPath.startsWith("/")) {
-            throw new IllegalArgumentException("Parameters lockPath must start with '/'.");
-        }
-
-        String k = lockPath + "/" + lockKey;
+    public static void setInfo2Holder(LockObject lockObject, String lockKey, boolean needUnlock) {
 
         UnlockAfterDbCommitInfo info = new UnlockAfterDbCommitInfo();
         info.setNeedUnlock(needUnlock);
-        info.setLockPath(lockPath);
         info.setLockKey(lockKey);
-        infoMap.put(k, info);
+        info.setLockObject(lockObject);
+        infoMap.put(lockKey, info);
     }
 
-    public static void setInfo2Holder(String lockPath, String lockKey) {
-        setInfo2Holder(lockPath, lockKey, true);
+    public static void setInfo2Holder(LockObject lockObject, String lockKey) {
+        if (lockObject != null && lockObject.isLockSuccess()) {
+            setInfo2Holder(lockObject, lockKey, true);
+        }
     }
 
     /**
@@ -71,8 +64,8 @@ public class UnlockAfterDbCommitInfoHolder {
     public static class UnlockAfterDbCommitInfo {
         private boolean needUnlock = true;
 
-        private String lockPath;
-
         private String lockKey;
+
+        private LockObject lockObject;
     }
 }

@@ -1,6 +1,7 @@
 package com.cjyfff.dq.task.controller;
 
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
+import com.cjyfff.dq.common.lock.ZkLockImpl.LockObject;
 import com.cjyfff.dq.task.vo.dto.BaseMsgDto;
 import com.cjyfff.election.config.ZooKeeperClient;
 import com.cjyfff.dq.common.error.ApiException;
@@ -38,10 +39,13 @@ public class MessageController extends BaseController {
      */
     @RequestMapping(path = "/dq/acceptMsg", method={RequestMethod.POST})
     public DefaultWebApiResult acceptMsg(@RequestBody AcceptMsgDto reqDto) {
+
+        LockObject lockObject = null;
         try {
             checkParams(reqDto);
 
-            if (! zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr())) {
+            lockObject = zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
+            if (! lockObject.isLockSuccess()) {
                 return DefaultWebApiResult.failure(ErrorCodeMsg.TASK_IS_PROCESSING_CODE, ErrorCodeMsg.TASK_IS_PROCESSING_MSG);
             }
 
@@ -53,7 +57,9 @@ public class MessageController extends BaseController {
             log.error("publicMsgService acceptMsg get error: ", e);
             return DefaultWebApiResult.failure(ErrorCodeMsg.SYSTEM_ERROR_CODE, ErrorCodeMsg.SYSTEM_ERROR_MSG);
         } finally {
-            zkLock.tryUnlock(TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
+            if (lockObject != null && lockObject.isLockSuccess()) {
+                zkLock.tryUnlock(lockObject);
+            }
         }
     }
 

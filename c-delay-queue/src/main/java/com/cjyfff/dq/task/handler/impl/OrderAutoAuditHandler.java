@@ -2,6 +2,7 @@ package com.cjyfff.dq.task.handler.impl;
 
 import com.alibaba.fastjson.JSON;
 
+import com.cjyfff.dq.common.lock.ZkLockImpl.LockObject;
 import com.cjyfff.election.config.ZooKeeperClient;
 import com.cjyfff.dq.common.aop.UnlockAfterDbCommit;
 import com.cjyfff.dq.common.lock.UnlockAfterDbCommitInfoHolder;
@@ -57,9 +58,13 @@ public class OrderAutoAuditHandler implements ITaskHandler {
         if (StringUtils.isEmpty(orderId)) {
             return new HandlerResult(HandlerResult.DEFAULT_FAIL_CODE, "orderId不能为空");
         }
+        LockObject lockObject = null;
+        String lockKey = zkLock.getKeyLockKey(ORDER_LOCK_PAHT, orderId);
+
         try {
             // 一张订单同一时间只可能进行一个操作，因此直接用order id作为lock key，不用考虑状态
-            if (zkLock.tryLock(zooKeeperClient.getClient(), ORDER_LOCK_PAHT, orderId, 30)) {
+            lockObject = zkLock.tryLock(zooKeeperClient.getClient(), ORDER_LOCK_PAHT, orderId, 30);
+            if (lockObject.isLockSuccess()) {
                 if (checkOrderIsInitStatus(orderId)) {
                     updateOrderStatus(orderId, AUDIT_COMPLETED);
                     return new HandlerResult(HandlerResult.SUCCESS_CODE, String.format("订单%s自动客审成功", orderId));
@@ -75,7 +80,7 @@ public class OrderAutoAuditHandler implements ITaskHandler {
             log.error("OrderAutoAuditHandler get error:", e);
             return new HandlerResult(HandlerResult.DEFAULT_FAIL_CODE, String.format("订单自动客审时发生错误：%s", e.getMessage()));
         } finally {
-            UnlockAfterDbCommitInfoHolder.setInfo2Holder(ORDER_LOCK_PAHT, orderId);
+            UnlockAfterDbCommitInfoHolder.setInfo2Holder(lockObject, orderId);
         }
     }
 
