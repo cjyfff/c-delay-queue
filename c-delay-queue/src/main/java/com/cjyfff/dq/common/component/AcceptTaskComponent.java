@@ -49,7 +49,13 @@ public class AcceptTaskComponent {
         int shardingAmount = shardingMap.size();
 
         // hashCode有可能是负数，需要处理一下
-        return Integer.valueOf((taskId.hashCode() & 0x7FFFFFFF) % shardingAmount).byteValue();
+        int tmpId = (taskId.hashCode() & 0x7FFFFFFF) % shardingAmount;
+
+        if (tmpId > 127) {
+            // todo：应该重构把 shardingId 的类型改为 Integer，目前的 Byte 类型最多只支持 127 个节点
+            log.error("Do not support sharding amount larger than 127.");
+        }
+        return Integer.valueOf(tmpId).byteValue();
     }
 
     /**
