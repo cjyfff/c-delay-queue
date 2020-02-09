@@ -6,6 +6,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.cjyfff.TestConfig;
+import com.cjyfff.dq.DelayQueueApplication;
+import com.cjyfff.dq.common.lock.ZkLockImpl.LockObject;
 import com.cjyfff.election.config.ZooKeeperClient;
 import com.cjyfff.dq.common.lock.ZkLock;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -14,6 +16,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -28,6 +32,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @TestPropertySource(
     locations = {"classpath:application.properties"}
 )
+@SpringBootTest(classes = DelayQueueApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 public class LockTests {
 
     @Autowired
@@ -68,9 +73,9 @@ public class LockTests {
                 pool.submit(() -> {
                     for (int j = 0; j < 100; j++) {
                         try {
-                            zkLock.tryLock(client, lockPath, lockKey, 60);
+                            LockObject lockObject = zkLock.tryLock(client, lockPath, lockKey, 60);
                             a[0]++;
-                            zkLock.tryUnlock(lockPath, lockKey);
+                            zkLock.tryUnlock(lockObject);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -86,7 +91,7 @@ public class LockTests {
 
             System.out.println("a: " + a[0]);
 
-            Assert.assertTrue(a[0] == 500);
+            Assert.assertEquals(500, (int)a[0]);
         } catch (Exception e) {
             e.printStackTrace();
         }

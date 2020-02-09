@@ -6,6 +6,7 @@ import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.component.AcceptTaskComponent;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.common.lock.ZkLock;
+import com.cjyfff.dq.common.lock.ZkLockImpl.LockObject;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.service.InnerMsgService;
@@ -43,14 +44,18 @@ public class InnerMsgServiceImpl implements InnerMsgService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void acceptMsg(InnerMsgDto reqDto) throws Exception {
+        LockObject lockObject = null;
         try {
-            if (! zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr())) {
+            lockObject = zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
+            if (! lockObject.isLockSuccess()) {
                 throw new ApiException(ErrorCodeMsg.TASK_IS_PROCESSING_CODE, ErrorCodeMsg.TASK_IS_PROCESSING_MSG);
             }
             doAcceptMsg(reqDto);
 
         } finally {
-            zkLock.tryUnlock(TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
+            if (lockObject != null && lockObject.isLockSuccess()){
+                zkLock.tryUnlock(lockObject);
+            }
         }
     }
 

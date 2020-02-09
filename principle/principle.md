@@ -37,3 +37,10 @@
 5.3 节点间建立连接之后，作为客户端的节点会把自身node id返回给服务端，同时客户端把node id与Netty channel的对应关系保存起来，服务端也把node id与Netty channel的对应关系保存。这样所有节点都有一份node id与Netty channel的对应关系，可以根据node id向指定节点发送消息。
 
 5.4 由于节点间的任务转发消息采用Netty的异步模式，无法在发送消息后马上知道消息是否接收。为了避免网络抖动等原因造成消息没有成功投放，系统加入了消息确认机制。节点在发送消息时，会把消息的发送时间等信息存放到一个集合里，当对方节点收到消息并响应时，节点会把消息记录从该集合里删除。有一个定时任务会定时检查集合里的消息记录，假如某个消息超过指定时间仍然没有被确认，该消息会被重新发送。
+
+### 6.选举逻辑
+选举逻辑主要分为初始化时选举以及节点变更时各节点的处理逻辑，如下两图：
+
+![初始化时选举](https://github.com/cjyfff/c-delay-queue/blob/master/principle/img/%E9%80%89%E4%B8%BE%E6%B5%81%E7%A8%8B-%E5%88%9D%E5%A7%8B%E5%8C%96.png)
+
+![选举流程-节点变更](https://github.com/cjyfff/c-delay-queue/blob/master/principle/img/%E9%80%89%E4%B8%BE%E6%B5%81%E7%A8%8B-%E8%8A%82%E7%82%B9%E5%8F%98%E6%9B%B4.png)

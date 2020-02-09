@@ -2,6 +2,8 @@ package com.cjyfff.dq.common.lock;
 
 import java.util.concurrent.TimeUnit;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
@@ -20,23 +22,20 @@ public class ZkLockImpl implements ZkLock {
     private final static String DEFAULT_LOCK_KEY = "/default_lock_key";
 
     @Override
-    public boolean tryLock(CuratorFramework client, String lockPath, String lockKey, Integer seconds) throws LockException {
+    public LockObject tryLock(CuratorFramework client, String lockPath, String lockKey, Integer seconds) throws LockException {
 
         String k = getKeyLockKey(lockPath, lockKey);
 
         try {
             if (StringUtils.isEmpty(k)) {
-                return false;
+                return new LockObject(null, false);
             }
 
             InterProcessLock lock = new MyInterProcessSemaphoreMutex(client, k);
-            // 加锁成功后需要把锁对象存入TreadLocal，解锁时根据锁对象来解锁，防止对别的线程
-            // 所加的锁进行解锁操作
             if (lock.acquire(seconds, TimeUnit.SECONDS)) {
-                ZkLockHolder.setLockKeySet(k, lock);
-                return true;
+                return new LockObject(lock, true);
             }
-            return false;
+            return new LockObject(lock, false);
         } catch (Exception e) {
             log.error("ZkLock tryLock method get error.", e);
             // 此处不能return false;，否则的话出现异常，调用方会误以为是加锁失败
@@ -45,28 +44,32 @@ public class ZkLockImpl implements ZkLock {
     }
 
     @Override
-    public boolean idempotentLock(CuratorFramework client, String lockPath, String lockKey) throws LockException {
+    public LockObject idempotentLock(CuratorFramework client, String lockPath, String lockKey) throws LockException {
         return this.tryLock(client, lockPath, lockKey, 0);
     }
 
     @Override
-    public void tryUnlock(String lockPath, String lockKey) {
-        String k = getKeyLockKey(lockPath, lockKey);
+    public void tryUnlock(LockObject lockObject) {
 
-        if (StringUtils.isEmpty(k)) {
+        if (lockObject == null) {
+            log.warn("lockObject is null.");
             return;
         }
 
+        if (! lockObject.isLockSuccess()) {
+            log.warn("lockObject.isLockSuccess() is false.");
+        }
+
+        if (lockObject.getLock() == null) {
+            log.warn("lockObject.getLock() is null.");
+            return;
+        }
+
+        InterProcessLock lock = lockObject.getLock();
+
         try {
-            InterProcessLock lock = ZkLockHolder.getLockByKey(k);
-
-            if (lock == null) {
-                return;
-            }
-
             lock.release();
 
-            ZkLockHolder.removeLockByKey(k);
         } catch (Exception e) {
             log.error("ZkLock tryUnlock method get error.", e);
         }
@@ -83,5 +86,19 @@ public class ZkLockImpl implements ZkLock {
             lockKey = DEFAULT_LOCK_KEY;
         }
         return lockPath + "/" + lockKey;
+    }
+
+    @Getter
+    @Setter
+    public static class LockObject {
+
+        public LockObject(InterProcessLock lock, boolean lockSuccess) {
+            this.lock = lock;
+            this.lockSuccess = lockSuccess;
+        }
+
+        private InterProcessLock lock;
+
+        private boolean lockSuccess;
     }
 }
