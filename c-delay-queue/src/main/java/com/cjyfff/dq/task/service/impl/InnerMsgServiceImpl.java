@@ -69,7 +69,7 @@ public class InnerMsgServiceImpl implements InnerMsgService {
         }
 
         // 从主库拿任务信息，不会存在主从未同步的延时问题
-        DelayTask delayTask = delayTaskMapper.selectByTaskIdAndStatus(TaskStatus.TRANSMITTING.getStatus(), reqDto.getTaskId(),
+        DelayTask delayTask = delayTaskMapper.selectByTaskIdAndStatusForUpdate(TaskStatus.TRANSMITTING.getStatus(), reqDto.getTaskId(),
             ShardingInfo.getShardingId());
 
         if (delayTask == null) {
