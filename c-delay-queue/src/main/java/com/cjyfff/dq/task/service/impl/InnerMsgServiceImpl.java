@@ -1,18 +1,14 @@
 package com.cjyfff.dq.task.service.impl;
 
-import com.cjyfff.dq.common.TaskConfig;
 import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.component.AcceptTaskComponent;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
-import com.cjyfff.dq.common.lock.ZkLock;
-import com.cjyfff.dq.common.lock.ZkLockImpl.LockObject;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.service.InnerMsgService;
 import com.cjyfff.dq.task.service.component.MsgServiceComponent;
 import com.cjyfff.dq.task.vo.dto.InnerMsgDto;
-import com.cjyfff.election.config.ZooKeeperClient;
 import com.cjyfff.election.core.info.ShardingInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,28 +31,10 @@ public class InnerMsgServiceImpl implements InnerMsgService {
     @Autowired
     private DelayTaskMapper delayTaskMapper;
 
-    @Autowired
-    private ZkLock zkLock;
-
-    @Autowired
-    private ZooKeeperClient zooKeeperClient;
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void acceptMsg(InnerMsgDto reqDto) throws Exception {
-        LockObject lockObject = null;
-        try {
-            lockObject = zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
-            if (! lockObject.isLockSuccess()) {
-                throw new ApiException(ErrorCodeMsg.TASK_IS_PROCESSING_CODE, ErrorCodeMsg.TASK_IS_PROCESSING_MSG);
-            }
-            doAcceptMsg(reqDto);
-
-        } finally {
-            if (lockObject != null && lockObject.isLockSuccess()){
-                zkLock.tryUnlock(lockObject);
-            }
-        }
+        doAcceptMsg(reqDto);
     }
 
     private void doAcceptMsg(InnerMsgDto reqDto) throws Exception {
