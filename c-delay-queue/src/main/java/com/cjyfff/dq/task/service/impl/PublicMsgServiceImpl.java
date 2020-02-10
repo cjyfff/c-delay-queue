@@ -109,13 +109,13 @@ public class PublicMsgServiceImpl implements PublicMsgService {
     }
 
     private void sendInnerTaskMsg(AcceptMsgDto reqDto) throws Exception {
-        Byte targetShardingId = acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId());
+        Integer targetShardingId = acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId());
 
         TaskTransportReqPacket reqPacket = new TaskTransportReqPacket();
         BeanUtils.copyProperties(reqDto, reqPacket);
         String nonceStr = UUID.randomUUID().toString().replace("-", "");
         reqPacket.setNonceStr(nonceStr);
-        reqPacket.setNodeId(ShardingInfo.getNodeId());
+        reqPacket.setShardingId(ShardingInfo.getShardingId());
         reqPacket.setType(PacketType.TASK_TRANSPORT_REQ);
 
         // 记录发送信息

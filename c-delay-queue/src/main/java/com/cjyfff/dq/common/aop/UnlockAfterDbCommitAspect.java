@@ -34,7 +34,7 @@ public class UnlockAfterDbCommitAspect {
             String k = (String) entry.getKey();
             UnlockAfterDbCommitInfo info = (UnlockAfterDbCommitInfo) entry.getValue();
             if (info.isNeedUnlock()) {
-                zkLock.tryUnlock(info.getLockPath(), info.getLockKey());
+                zkLock.tryUnlock(info.getLockObject());
             }
 
             UnlockAfterDbCommitInfoHolder.removeInfoByKey(k);

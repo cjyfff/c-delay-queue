@@ -23,7 +23,7 @@ public class MonitorServiceImpl implements MonitorService {
         MonitorNodeInfoVo infoVo = new MonitorNodeInfoVo();
 
         infoVo.setShardingMap(ShardingInfo.getShardingMap());
-        infoVo.setNodeId(ShardingInfo.getNodeId());
+        infoVo.setShardingId(ShardingInfo.getShardingId());
         infoVo.setElectionStatus(ElectionStatus.getElectionStatus().getValue());
 
         if (ElectionStatus.getLeaderLatch().hasLeadership()) {

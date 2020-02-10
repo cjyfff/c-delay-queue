@@ -14,7 +14,7 @@ public class DelayQueueExecLog {
 
     private Integer status;
 
-    private Byte sharding;
+    private Integer sharding;
 
     private String functionName;
 

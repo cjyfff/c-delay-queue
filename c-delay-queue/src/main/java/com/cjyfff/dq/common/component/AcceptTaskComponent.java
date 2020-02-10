@@ -42,14 +42,14 @@ public class AcceptTaskComponent {
      * @param taskId
      * @return
      */
-    public Byte getShardingIdByTaskId(String taskId) {
-        Map<Byte, String> shardingMap = ShardingInfo.getShardingMap();
+    public Integer getShardingIdByTaskId(String taskId) {
+        Map<Integer, String> shardingMap = ShardingInfo.getShardingMap();
 
         // 分片数量
         int shardingAmount = shardingMap.size();
 
         // hashCode有可能是负数，需要处理一下
-        return Integer.valueOf((taskId.hashCode() & 0x7FFFFFFF) % shardingAmount).byteValue();
+        return (taskId.hashCode() & 0x7FFFFFFF) % shardingAmount;
     }
 
     /**
@@ -58,7 +58,7 @@ public class AcceptTaskComponent {
      * @return
      */
     public boolean checkIsMyTask(String taskId) {
-        return getShardingIdByTaskId(taskId).equals(ShardingInfo.getNodeId());
+        return getShardingIdByTaskId(taskId).equals(ShardingInfo.getShardingId());
     }
 
     /**

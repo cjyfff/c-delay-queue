@@ -18,9 +18,9 @@ public class ServerGetClientInitInfoHandler extends SimpleChannelInboundHandler<
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ClientInitInfoPacket clientInitInfoPacket) {
-        log.debug("ServerGetClientInitInfoHandler get msg，node id: {}", clientInitInfoPacket.getNodeId());
+        log.debug("ServerGetClientInitInfoHandler get msg，sharding id: {}", clientInitInfoPacket.getShardingId());
 
-        NodeChannelInfo.channelInfoMap.put(clientInitInfoPacket.getNodeId(),
+        NodeChannelInfo.channelInfoMap.put(clientInitInfoPacket.getShardingId(),
             new OneNodeChannelInfo(ctx.channel(), false));
     }
 }
