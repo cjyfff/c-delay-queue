@@ -13,7 +13,7 @@
     <result column="retry_time" jdbcType="BIGINT" property="retryTime" />
     <result column="retry_count" jdbcType="TINYINT" property="retryCount" />
     <result column="already_retry_count" jdbcType="TINYINT" property="alreadyRetryCount" />
-    <result column="sharding_id" jdbcType="TINYINT" property="shardingId" />
+    <result column="sharding_id" jdbcType="INTEGER" property="shardingId" />
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="modified_at" jdbcType="TIMESTAMP" property="modifiedAt" />
   </resultMap>
@@ -51,7 +51,7 @@
     and
     status = #{oldStatus,jdbcType=INTEGER}
     and
-    sharding_id = #{shardingId,jdbcType=TINYINT}
+    sharding_id = #{shardingId,jdbcType=INTEGER}
   </select>
 
   <select id="selectByStatusAndExecuteTime" resultMap="BaseResultMap">
@@ -61,7 +61,7 @@
     where
     status = #{oldStatus,jdbcType=INTEGER}
     and
-    sharding_id = #{shardingId,jdbcType=TINYINT}
+    sharding_id = #{shardingId,jdbcType=INTEGER}
     and
     execute_time between #{executeTimeBegin,jdbcType=BIGINT} and #{executeTimeEnd,jdbcType=BIGINT}
   </select>
@@ -82,7 +82,7 @@
     where
     status = #{status,jdbcType=INTEGER}
     and
-    sharding_id = #{shardingId,jdbcType=TINYINT}
+    sharding_id = #{shardingId,jdbcType=INTEGER}
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
@@ -97,7 +97,7 @@
     values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=VARCHAR}, #{functionName,jdbcType=VARCHAR}, 
       #{params,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{delayTime,jdbcType=BIGINT}, #{executeTime,jdbcType=BIGINT},
       #{retryInterval,jdbcType=INTEGER}, #{retryTime,jdbcType=BIGINT},
-      #{retryCount,jdbcType=TINYINT}, #{alreadyRetryCount,jdbcType=TINYINT}, #{shardingId,jdbcType=TINYINT}, #{createdAt,jdbcType=TIMESTAMP},
+      #{retryCount,jdbcType=TINYINT}, #{alreadyRetryCount,jdbcType=TINYINT}, #{shardingId,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP},
       #{modifiedAt,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.cjyfff.dq.task.model.DelayTask" keyProperty="id" useGeneratedKeys="true">
@@ -181,7 +181,7 @@
         #{alreadyRetryCount,jdbcType=TINYINT},
       </if>
       <if test="shardingId != null">
-        #{shardingId,jdbcType=TINYINT},
+        #{shardingId,jdbcType=INTEGER},
       </if>
       <if test="createdAt != null">
         #{createdAt,jdbcType=TIMESTAMP},
@@ -225,7 +225,7 @@
         already_retry_count = #{alreadyRetryCount,jdbcType=TINYINT},
       </if>
       <if test="shardingId != null">
-        sharding_id = #{shardingId,jdbcType=TINYINT},
+        sharding_id = #{shardingId,jdbcType=INTEGER},
       </if>
       <if test="createdAt != null">
         created_at = #{createdAt,jdbcType=TIMESTAMP},
@@ -245,7 +245,7 @@
     where
     task_id = #{taskId,jdbcType=VARCHAR}
     and
-    sharding_id = #{shardingId,jdbcType=TINYINT}
+    sharding_id = #{shardingId,jdbcType=INTEGER}
     and
     status = #{oldStatus,jdbcType=INTEGER}
   </update>
@@ -262,7 +262,7 @@
       retry_time = #{retryTime,jdbcType=BIGINT},
       retry_count = #{retryCount,jdbcType=TINYINT},
       already_retry_count = #{alreadyRetryCount,jdbcType=TINYINT},
-      sharding_id = #{shardingId,jdbcType=TINYINT},
+      sharding_id = #{shardingId,jdbcType=INTEGER},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
       modified_at = #{modifiedAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}

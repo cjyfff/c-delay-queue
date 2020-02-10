@@ -11,5 +11,5 @@ import lombok.Setter;
 public abstract class Packet {
     private Byte type;
 
-    private Byte shardingId;
+    private Integer shardingId;
 }

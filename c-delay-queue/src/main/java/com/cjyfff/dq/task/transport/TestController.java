@@ -52,7 +52,7 @@ public class TestController {
 @Getter
 @Setter
 class TestInfoReqVo {
-    private Byte shardingId;
+    private Integer shardingId;
 
     private String taskId;
 }

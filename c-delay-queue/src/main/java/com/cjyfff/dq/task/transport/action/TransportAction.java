@@ -47,9 +47,9 @@ public class TransportAction {
             return;
         }
 
-        Byte myShardingId = ShardingInfo.getShardingId();
+        Integer myShardingId = ShardingInfo.getShardingId();
 
-        for (Entry<Byte, String> info : ShardingInfo.getShardingMap().entrySet()) {
+        for (Entry<Integer, String> info : ShardingInfo.getShardingMap().entrySet()) {
 
             if (info.getKey() < myShardingId) {
                 // 连接其他节点netty服务
@@ -72,12 +72,12 @@ public class TransportAction {
             return;
         }
 
-        for (Entry<Byte, OneNodeChannelInfo> info : NodeChannelInfo.channelInfoMap.entrySet()) {
+        for (Entry<Integer, OneNodeChannelInfo> info : NodeChannelInfo.channelInfoMap.entrySet()) {
             info.getValue().getChannel().closeFuture().sync();
         }
     }
 
-    public void sendMsg(Byte shardingId, Packet packet) throws ApiException{
+    public void sendMsg(Integer shardingId, Packet packet) throws ApiException{
         checkSendPacket(packet);
 
         OneNodeChannelInfo nodeChannelInfo = NodeChannelInfo.channelInfoMap.get(shardingId);
@@ -101,7 +101,7 @@ public class TransportAction {
         }
     }
 
-    private void connectServer(Byte serverShardingId, String serverHost, int serverPort) throws Exception {
+    private void connectServer(Integer serverShardingId, String serverHost, int serverPort) throws Exception {
         EventLoopGroup workerGroup = EventLoopGroupInfo.clientNioEventLoopGroup;
 
         if (workerGroup == null) {
@@ -131,7 +131,7 @@ public class TransportAction {
         doConnect(bootstrap, serverHost, serverPort, 5, serverShardingId);
     }
 
-    private static void doConnect(Bootstrap bootstrap, String host, int port, int retry, Byte serverShardingId) {
+    private static void doConnect(Bootstrap bootstrap, String host, int port, int retry, Integer serverShardingId) {
         bootstrap.connect(host, port).addListener(future -> {
             if (future.isSuccess()) {
                 Channel channel = ((ChannelFuture) future).channel();

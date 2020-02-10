@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class NodeChannelInfo {
-    public static ConcurrentSkipListMap<Byte, OneNodeChannelInfo> channelInfoMap = new ConcurrentSkipListMap<>();
+    public static ConcurrentSkipListMap<Integer, OneNodeChannelInfo> channelInfoMap = new ConcurrentSkipListMap<>();
 
     @Getter
     @Setter

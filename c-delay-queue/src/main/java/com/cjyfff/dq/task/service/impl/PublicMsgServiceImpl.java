@@ -109,7 +109,7 @@ public class PublicMsgServiceImpl implements PublicMsgService {
     }
 
     private void sendInnerTaskMsg(AcceptMsgDto reqDto) throws Exception {
-        Byte targetShardingId = acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId());
+        Integer targetShardingId = acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId());
 
         TaskTransportReqPacket reqPacket = new TaskTransportReqPacket();
         BeanUtils.copyProperties(reqDto, reqPacket);
