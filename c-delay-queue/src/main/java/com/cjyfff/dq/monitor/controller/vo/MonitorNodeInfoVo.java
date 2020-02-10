@@ -14,7 +14,7 @@ public class MonitorNodeInfoVo {
 
     private Map<Byte, String> shardingMap;
 
-    private Byte nodeId;
+    private Byte shardingId;
 
     private Integer electionStatus;
 

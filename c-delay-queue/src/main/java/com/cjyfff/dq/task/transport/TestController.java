@@ -32,10 +32,10 @@ public class TestController {
             TaskTransportReqPacket reqPacket = new TaskTransportReqPacket();
 
             reqPacket.setTaskId(reqVo.getTaskId());
-            reqPacket.setNodeId(ShardingInfo.getNodeId());
+            reqPacket.setShardingId(ShardingInfo.getShardingId());
             reqPacket.setType(PacketType.TASK_TRANSPORT_REQ);
 
-            transportAction.sendMsg(reqVo.getNodeId(), reqPacket);
+            transportAction.sendMsg(reqVo.getShardingId(), reqPacket);
 
             return DefaultWebApiResult.success();
         } catch (ApiException ae) {
@@ -52,7 +52,7 @@ public class TestController {
 @Getter
 @Setter
 class TestInfoReqVo {
-    private Byte nodeId;
+    private Byte shardingId;
 
     private String taskId;
 }

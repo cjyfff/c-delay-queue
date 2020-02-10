@@ -64,7 +64,7 @@ public class AcceptTaskComponent {
      * @return
      */
     public boolean checkIsMyTask(String taskId) {
-        return getShardingIdByTaskId(taskId).equals(ShardingInfo.getNodeId());
+        return getShardingIdByTaskId(taskId).equals(ShardingInfo.getShardingId());
     }
 
     /**

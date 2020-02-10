@@ -37,7 +37,7 @@ public class ClientTransportTaskReqHandler extends SimpleChannelInboundHandler<T
         TaskTransportRespPacket respPacket = new TaskTransportRespPacket();
         respPacket.setTaskId(taskTransportReqPacket.getTaskId());
         respPacket.setResult("success");
-        respPacket.setNodeId(ShardingInfo.getNodeId());
+        respPacket.setShardingId(ShardingInfo.getShardingId());
         respPacket.setType(PacketType.TASK_TRANSPORT_RESP);
 
         ctx.channel().writeAndFlush(respPacket);

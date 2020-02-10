@@ -23,7 +23,7 @@ public class ClientInitHandler extends ChannelInboundHandlerAdapter {
 
         ClientInitInfoPacket packet = new ClientInitInfoPacket();
 
-        packet.setNodeId(ShardingInfo.getNodeId());
+        packet.setShardingId(ShardingInfo.getShardingId());
         packet.setType(PacketType.CLIENT_INIT_INFO);
 
         ctx.channel().writeAndFlush(packet);

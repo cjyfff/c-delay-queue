@@ -115,7 +115,7 @@ public class PublicMsgServiceImpl implements PublicMsgService {
         BeanUtils.copyProperties(reqDto, reqPacket);
         String nonceStr = UUID.randomUUID().toString().replace("-", "");
         reqPacket.setNonceStr(nonceStr);
-        reqPacket.setNodeId(ShardingInfo.getNodeId());
+        reqPacket.setShardingId(ShardingInfo.getShardingId());
         reqPacket.setType(PacketType.TASK_TRANSPORT_REQ);
 
         // 记录发送信息
