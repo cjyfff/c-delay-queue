@@ -20,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 /**
- * 订单自动审核节点（demo，实际业务逻辑不应放在调度系统，而应该调用业务系统的接口）
+ * 任务示例
+ * 订单自动审核节点（这里是业务代码 demo，实际业务逻辑不应放在调度系统，而应该调用业务系统的接口）
  * 创建任务时传入订单id
  * 处理时，根据订单id取出订单
  * 自旋尝试获得锁，获得锁后再检查状态
@@ -59,7 +60,6 @@ public class OrderAutoAuditHandler implements ITaskHandler {
             return new HandlerResult(HandlerResult.DEFAULT_FAIL_CODE, "orderId不能为空");
         }
         LockObject lockObject = null;
-        String lockKey = zkLock.getKeyLockKey(ORDER_LOCK_PAHT, orderId);
 
         try {
             // 一张订单同一时间只可能进行一个操作，因此直接用order id作为lock key，不用考虑状态
