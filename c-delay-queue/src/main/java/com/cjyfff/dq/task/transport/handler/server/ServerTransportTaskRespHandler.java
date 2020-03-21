@@ -18,6 +18,8 @@ public class ServerTransportTaskRespHandler extends SimpleChannelInboundHandler<
 
     public static final ServerTransportTaskRespHandler INSTANCE = new ServerTransportTaskRespHandler();
 
+    private ServerTransportTaskRespHandler() {}
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TaskTransportRespPacket respPacket) {
 

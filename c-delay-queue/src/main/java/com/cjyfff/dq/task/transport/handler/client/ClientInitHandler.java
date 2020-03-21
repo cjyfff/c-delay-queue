@@ -17,6 +17,8 @@ public class ClientInitHandler extends ChannelInboundHandlerAdapter {
 
     public static final ClientInitHandler INSTANCE = new ClientInitHandler();
 
+    private ClientInitHandler() {}
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         log.debug("Client sending init info...");

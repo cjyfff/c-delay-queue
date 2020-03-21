@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ServerGetClientInitInfoHandler extends SimpleChannelInboundHandler<ClientInitInfoPacket> {
     public static final ServerGetClientInitInfoHandler INSTANCE = new ServerGetClientInitInfoHandler();
 
+    private ServerGetClientInitInfoHandler() {}
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ClientInitInfoPacket clientInitInfoPacket) {
         log.debug("ServerGetClientInitInfoHandler get msg，sharding id: {}", clientInitInfoPacket.getShardingId());

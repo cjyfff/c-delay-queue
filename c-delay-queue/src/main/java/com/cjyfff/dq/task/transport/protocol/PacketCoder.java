@@ -16,6 +16,8 @@ public class PacketCoder {
 
     public static final PacketCoder INSTANCE = new PacketCoder();
 
+    private PacketCoder() {}
+
     private final static Map<Byte, Class<? extends Packet>> PACKET_TYPE_CLASS_MAP =
         new HashMap<Byte, Class<? extends Packet>>() {
             {

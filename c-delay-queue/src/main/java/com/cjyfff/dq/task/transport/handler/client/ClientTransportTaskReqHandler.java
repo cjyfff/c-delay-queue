@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ClientTransportTaskReqHandler extends SimpleChannelInboundHandler<TaskTransportReqPacket> {
     public static final ClientTransportTaskReqHandler INSTANCE = new ClientTransportTaskReqHandler();
 
-    public ClientTransportTaskReqHandler() {
+    private ClientTransportTaskReqHandler() {
         super();
         transportAsyncBizService = (TransportAsyncBizService) SpringUtils.getBean("transportAsyncBizService");
     }

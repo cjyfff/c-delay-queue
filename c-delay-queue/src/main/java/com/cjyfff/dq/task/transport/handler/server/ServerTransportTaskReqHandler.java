@@ -20,7 +20,7 @@ public class ServerTransportTaskReqHandler extends SimpleChannelInboundHandler<T
 
     public static final ServerTransportTaskReqHandler INSTANCE = new ServerTransportTaskReqHandler();
 
-    public ServerTransportTaskReqHandler() {
+    private ServerTransportTaskReqHandler() {
         super();
         transportAsyncBizService = (TransportAsyncBizService) SpringUtils.getBean("transportAsyncBizService");
     }
