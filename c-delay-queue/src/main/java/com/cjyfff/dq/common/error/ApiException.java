@@ -12,6 +12,11 @@ public class ApiException extends Exception {
     private String code;
     private String msg;
 
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
+
     public ApiException(String code, String msg) {
         super(msg);
         this.code = code;
