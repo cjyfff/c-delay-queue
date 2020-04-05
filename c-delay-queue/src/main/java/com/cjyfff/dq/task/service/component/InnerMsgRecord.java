@@ -16,7 +16,7 @@ public class InnerMsgRecord {
     @Getter
     @Setter
     public static class InnerMsgRecordVo {
-        public InnerMsgRecordVo(Long sendTime, Byte targetShardingId,
+        public InnerMsgRecordVo(Long sendTime, Integer targetShardingId,
                                 TaskTransportReqPacket reqPacket) {
             this.sendTime = sendTime;
             this.targetShardingId = targetShardingId;
@@ -25,7 +25,7 @@ public class InnerMsgRecord {
 
         private Long sendTime;
 
-        private Byte targetShardingId;
+        private Integer targetShardingId;
 
         private TaskTransportReqPacket reqPacket;
     }

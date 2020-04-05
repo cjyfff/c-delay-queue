@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ClientTransportTaskReqHandler extends SimpleChannelInboundHandler<TaskTransportReqPacket> {
     public static final ClientTransportTaskReqHandler INSTANCE = new ClientTransportTaskReqHandler();
 
-    public ClientTransportTaskReqHandler() {
+    private ClientTransportTaskReqHandler() {
         super();
         transportAsyncBizService = (TransportAsyncBizService) SpringUtils.getBean("transportAsyncBizService");
     }
@@ -37,7 +37,7 @@ public class ClientTransportTaskReqHandler extends SimpleChannelInboundHandler<T
         TaskTransportRespPacket respPacket = new TaskTransportRespPacket();
         respPacket.setTaskId(taskTransportReqPacket.getTaskId());
         respPacket.setResult("success");
-        respPacket.setNodeId(ShardingInfo.getNodeId());
+        respPacket.setShardingId(ShardingInfo.getShardingId());
         respPacket.setType(PacketType.TASK_TRANSPORT_RESP);
 
         ctx.channel().writeAndFlush(respPacket);

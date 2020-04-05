@@ -27,11 +27,11 @@ eureka.client.serviceUrl.defaultZone=http://localhost:8810/eureka/
 
 jdbc.driverClassName=com.mysql.jdbc.Driver
 
-jdbc.write.url=jdbc:mysql://192.168.43.101:3306/delay_queue?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8&useSSL=false
+jdbc.write.url=jdbc:mysql://192.168.43.101:3306/delay_queue?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8&useSSL=false&connectTimeout=60000&socketTimeout=30000
 jdbc.write.username=root
 jdbc.write.password=xxxxx
 
-jdbc.read.url=jdbc:mysql://192.168.43.101:3306/delay_queue?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8&useSSL=false
+jdbc.read.url=jdbc:mysql://192.168.43.101:3306/delay_queue?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8&useSSL=false&connectTimeout=60000&socketTimeout=30000
 jdbc.read.username=root
 jdbc.read.password=xxxxx
 

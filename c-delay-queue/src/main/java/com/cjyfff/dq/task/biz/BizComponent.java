@@ -38,7 +38,7 @@ public class BizComponent {
 
     private void rePushTaskToQueue() {
         List<DelayTask> myDelayTaskList = delayTaskMapper.selectByStatusAndShardingId(
-            TaskStatus.IN_QUEUE.getStatus(), ShardingInfo.getNodeId());
+            TaskStatus.IN_QUEUE.getStatus(), ShardingInfo.getShardingId());
 
         for (DelayTask delayTask : myDelayTaskList) {
             QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());
@@ -51,7 +51,7 @@ public class BizComponent {
 
     private void reHandleTransmittingTask() {
         List<DelayTask> transmittingDelayTaskList = delayTaskMapper.selectByStatusAndShardingId(
-            TaskStatus.TRANSMITTING.getStatus(), ShardingInfo.getNodeId());
+            TaskStatus.TRANSMITTING.getStatus(), ShardingInfo.getShardingId());
 
         for (DelayTask delayTask : transmittingDelayTaskList) {
             if (acceptTaskComponent.checkNeedToPushQueueNow(delayTask.getDelayTime())) {

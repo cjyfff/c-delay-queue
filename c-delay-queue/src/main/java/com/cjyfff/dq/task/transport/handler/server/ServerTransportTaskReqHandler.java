@@ -2,8 +2,6 @@ package com.cjyfff.dq.task.transport.handler.server;
 
 import com.cjyfff.dq.common.SpringUtils;
 import com.cjyfff.dq.task.transport.biz.TransportAsyncBizService;
-import com.cjyfff.dq.task.transport.info.NodeChannelInfo;
-import com.cjyfff.dq.task.transport.info.NodeChannelInfo.OneNodeChannelInfo;
 import com.cjyfff.dq.task.transport.protocol.PacketType;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportReqPacket;
 import com.cjyfff.dq.task.transport.protocol.TaskTransportRespPacket;
@@ -22,7 +20,7 @@ public class ServerTransportTaskReqHandler extends SimpleChannelInboundHandler<T
 
     public static final ServerTransportTaskReqHandler INSTANCE = new ServerTransportTaskReqHandler();
 
-    public ServerTransportTaskReqHandler() {
+    private ServerTransportTaskReqHandler() {
         super();
         transportAsyncBizService = (TransportAsyncBizService) SpringUtils.getBean("transportAsyncBizService");
     }
@@ -38,7 +36,7 @@ public class ServerTransportTaskReqHandler extends SimpleChannelInboundHandler<T
         log.debug("ServerTransportTaskReqHandler send Msg");
 
         TaskTransportRespPacket respPacket = new TaskTransportRespPacket();
-        respPacket.setNodeId(ShardingInfo.getNodeId());
+        respPacket.setShardingId(ShardingInfo.getShardingId());
         respPacket.setTaskId(taskTransportReqPacket.getTaskId());
         respPacket.setResult("success");
         respPacket.setType(PacketType.TASK_TRANSPORT_RESP);
