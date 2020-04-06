@@ -20,7 +20,7 @@
 
 ## 依赖组件
 1. MySQL 5.6+
-2. Zookeeper 3.4 不支持3.5
+2. Zookeeper 3.5 3.6
 
 ## 运行、部署步骤
 1. 下载[l-election选举sdk](https://github.com/cjyfff/l-election.git)，安装到本地mvn仓库
