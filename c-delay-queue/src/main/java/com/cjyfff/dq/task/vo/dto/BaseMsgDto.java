@@ -38,6 +38,9 @@ public class BaseMsgDto {
 
     /**
      * 随机字符串，用于保证接口幂等
+     * 冪等不能使用 taskId，因为任务可能会由 A 节点转发到 B 节点，幂等使用分布式锁实现的话，
+     * 转发过程中 A 还没有对 task id 解锁，B 节点使用 task id 做幂等判断时就会拒绝处理
+     * 因此使用另一个随机字符串来作为请求标记，转发时，A 节点会重新生成这个随机字符串
      */
     @Size(min = 32, max = 32)
     @NotEmpty(message = "can not be null")

@@ -73,7 +73,7 @@ public class TransportAction {
         }
 
         for (Entry<Integer, OneNodeChannelInfo> info : NodeChannelInfo.channelInfoMap.entrySet()) {
-            info.getValue().getChannel().closeFuture().sync();
+            info.getValue().getChannel().closeFuture();
         }
     }
 
