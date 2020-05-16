@@ -53,3 +53,6 @@ druidOption.setMaxPoolPreparedStatementPerConnectionSize=20
 druidOption.setMaxOpenPreparedStatements=100
 druidOption.setMultiStatementAllow=true
 druidOption.dataSourceFilters=stat,wall,slf4j
+
+spring.task.scheduling.pool.size=5
+spring.task.scheduling.thread-name-prefix=s-task-pool-
