@@ -1,9 +1,5 @@
 package com.cjyfff.dq.config;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -13,9 +9,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Configuration
 @EnableScheduling
 public class SpringScheduleConfig {
-    @Bean
-    public Executor taskScheduler() {
-        //return new ThreadPoolExecutor(5, 10, 0, TimeUnit.NANOSECONDS, new DelayedWorkQueue());
-        return Executors.newScheduledThreadPool(5);
-    }
+    // 新版spring boot 直接通过 spring.task.scheduling.pool.size 设置定时任务线程数
+    //@Bean
+    //public Executor taskScheduler() {
+    //    //return new ThreadPoolExecutor(5, 10, 0, TimeUnit.NANOSECONDS, new DelayedWorkQueue());
+    //    return Executors.newScheduledThreadPool(5);
+    //}
 }
