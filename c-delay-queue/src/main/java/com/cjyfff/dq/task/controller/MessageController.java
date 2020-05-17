@@ -44,7 +44,7 @@ public class MessageController extends BaseController {
 
         LockObject lockObject = null;
         try {
-            checkParams(reqDto);
+            checkAccessMsgParams(reqDto);
 
             lockObject = zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
             if (! lockObject.isLockSuccess()) {
@@ -74,15 +74,5 @@ public class MessageController extends BaseController {
         }
     }
 
-    private void checkParams(BaseMsgDto reqDto) throws ApiException {
-        BeanValidators.validateWithParameterException(validator, reqDto);
 
-        if (reqDto.getRetryCount() == null) {
-            reqDto.setRetryCount(Byte.valueOf("0"));
-        }
-
-        if (reqDto.getRetryInterval() == null) {
-            reqDto.setRetryInterval(1);
-        }
-    }
 }
