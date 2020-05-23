@@ -52,3 +52,32 @@ druidOption.dataSourceFilters=stat,wall,slf4j
 
 spring.task.scheduling.pool.size=5
 spring.task.scheduling.thread-name-prefix=s-task-pool-
+
+
+###### spring cloud config begin #######
+spring.application.name=c-delay-queue
+
+management.endpoints.web.exposure.include=*
+spring.cloud.nacos.discovery.server-addr=192.168.1.17:8848
+
+spring.cloud.nacos.username=nacos
+spring.cloud.nacos.password=nacos
+
+#配置请求 GZIP 压缩
+feign.compression.request.enabled=true
+#配置响应 GZIP 压缩
+feign.compression.response.enabled=true
+#配置压缩支持的 MIME TYPE
+feign.compression.request.mime-types=text/xml,application/xml,application/json
+#配置压缩数据大小的最小阀值，默认 2048
+feign.compression.request.min-request-size=512
+
+#-----------------------------spring boot gzip
+#是否启用压缩
+server.compression.enabled=true
+server.compression.mime-types=application/json,application/xml,text/html,text/xml,text/plain
+
+#启用 httpclient
+feign.httpclient.enabled=true
+
+###### spring cloud config end #######
