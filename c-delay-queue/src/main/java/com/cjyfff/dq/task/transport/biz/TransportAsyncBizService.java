@@ -1,6 +1,6 @@
 package com.cjyfff.dq.task.transport.biz;
 
-import com.cjyfff.dq.common.TaskConfig;
+import com.cjyfff.dq.config.TaskConfig;
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.common.lock.ZkLock;

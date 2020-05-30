@@ -7,7 +7,7 @@ import com.cjyfff.election.config.ZooKeeperClient;
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.BeanValidators;
 import com.cjyfff.dq.common.DefaultWebApiResult;
-import com.cjyfff.dq.common.TaskConfig;
+import com.cjyfff.dq.config.TaskConfig;
 import com.cjyfff.dq.common.lock.ZkLock;
 import com.cjyfff.dq.task.service.PublicMsgService;
 import com.cjyfff.dq.task.vo.dto.AcceptMsgDto;
