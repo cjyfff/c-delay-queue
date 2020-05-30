@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: delay-queue-service
+  main:
+    allow-bean-definition-overriding: true
+
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos
+      config:
+        server-addr: 192.168.1.17:8848
+      discovery:
+        enabled: true
+        register-enabled: true
+        server-addr: 192.168.1.17:8848

@@ -3,6 +3,7 @@ package com.cjyfff.dq.common.component;
 import java.util.Map;
 
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
+import com.cjyfff.dq.config.DynamicConfig;
 import com.cjyfff.election.core.info.ElectionStatus;
 import com.cjyfff.election.core.info.ElectionStatus.ElectionStatusType;
 import com.cjyfff.election.core.info.ShardingInfo;
@@ -11,7 +12,6 @@ import com.cjyfff.dq.task.queue.QueueTask;
 import com.cjyfff.dq.task.queue.DelayTaskQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,8 +24,8 @@ public class AcceptTaskComponent {
     @Autowired
     private DelayTaskQueue delayTaskQueue;
 
-    @Value("${delay_queue.critical_polling_time}")
-    private Long criticalPollingTime;
+    @Autowired
+    private DynamicConfig dynamicConfig;
 
     /**
      * 检查选举状态
@@ -83,6 +83,6 @@ public class AcceptTaskComponent {
      * @return
      */
     public boolean checkNeedToPushQueueNow(Long delayTime) {
-        return delayTime.compareTo(criticalPollingTime) <= 0;
+        return delayTime.compareTo(dynamicConfig.getCriticalPollingTime()) <= 0;
     }
 }

@@ -3,6 +3,7 @@ package com.cjyfff.dq.task.schedule;
 import java.util.Date;
 import java.util.List;
 
+import com.cjyfff.dq.config.DynamicConfig;
 import com.cjyfff.election.core.info.ElectionStatus;
 import com.cjyfff.election.core.info.ElectionStatus.ElectionStatusType;
 import com.cjyfff.election.core.info.ShardingInfo;
@@ -14,7 +15,6 @@ import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.queue.QueueTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +36,8 @@ public class PollingTaskProducer {
     @Autowired
     private ExecLogComponent execLogComponent;
 
-    @Value("${delay_queue.critical_polling_time}")
-    private Long pollingTime;
+    @Autowired
+    private DynamicConfig dynamicConfig;
 
     @Scheduled(fixedRateString = "#{${delay_queue.critical_polling_time} * 1000}")
     @Transactional(rollbackFor = Exception.class)
@@ -56,7 +56,7 @@ public class PollingTaskProducer {
         // 所以也不会出现这种可能。
         // 因此这里的数据查询不用加锁。
         List<DelayTask> taskList = delayTaskMapper.selectByStatusAndExecuteTime(TaskStatus.POLLING.getStatus(),
-            ShardingInfo.getShardingId(), 0L, nowSecond + pollingTime);
+            ShardingInfo.getShardingId(), 0L, nowSecond + dynamicConfig.getCriticalPollingTime());
 
         for (DelayTask delayTask : taskList) {
             QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());

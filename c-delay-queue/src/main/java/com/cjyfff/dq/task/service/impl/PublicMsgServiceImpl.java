@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 
 import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
+import com.cjyfff.dq.config.DynamicConfig;
 import com.cjyfff.dq.task.service.component.InnerMsgRecord;
 import com.cjyfff.dq.task.service.component.InnerMsgRecord.InnerMsgRecordVo;
 import com.cjyfff.dq.task.service.component.MsgServiceComponent;
@@ -24,7 +25,6 @@ import com.google.common.util.concurrent.RateLimiter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,30 +47,18 @@ public class PublicMsgServiceImpl implements PublicMsgService {
     @Autowired
     private TransportAction transportAction;
 
-    @Value("${delay_queue.task_rate_limit_permits}")
-    private double taskRateLimitPermits;
-
-    @Value("${delay_queue.enable_task_rate_limit}")
-    private boolean enableTaskRateLimit;
+    @Autowired
+    private DynamicConfig dynamicConfig;
 
     private RateLimiter rateLimiter;
-
-    public PublicMsgServiceImpl(@Value("${delay_queue.enable_task_rate_limit}") boolean etl,
-                                @Value("${delay_queue.task_rate_limit_permits}") double tlp) {
-        if (etl) {
-            if (tlp > 0) {
-                rateLimiter = RateLimiter.create(tlp);
-            }
-        }
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void acceptMsg(AcceptMsgDto reqDto) throws Exception {
         // 限流逻辑
-        if (enableTaskRateLimit) {
+        if (dynamicConfig.isEnableTaskRateLimit()) {
             if (rateLimiter == null) {
-                throw new ApiException(ErrorCodeMsg.SYSTEM_ERROR_CODE, "RateLimiter is not initialization, check the configuration.");
+                rateLimiter = RateLimiter.create(dynamicConfig.getTaskRateLimitPermits());
             }
             if (! rateLimiter.tryAcquire(1)) {
                 log.warn("Reach task rate limit, request params is: " + JSON.toJSON(reqDto));
