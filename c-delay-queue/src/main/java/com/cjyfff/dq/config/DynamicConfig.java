@@ -23,6 +23,4 @@ public class DynamicConfig {
     @Value("${delay_queue.critical_polling_time}")
     private Long criticalPollingTime;
 
-    @Value("${delay_queue.test}")
-    private String test;
 }

@@ -12,6 +12,8 @@ l_election.zk_connection_timeout_ms=10000
 l_election.zk_base_sleep_time_ms=1000
 l_election.zk_max_retries=3
 
+#################### dynamic config begin ###########################
+
 # 是否开启新增任务接口限流，true为开启，false为不开启
 delay_queue.enable_task_rate_limit=true
 # 新增任务接口限流速率，单位q/s，开启新增任务接口限流的话，此参数必须配置，否则接口会返回错误
@@ -19,6 +21,8 @@ delay_queue.task_rate_limit_permits=1000
 
 # 从数据库中取出任务插入延时队列的定时任务执行间隔，单位秒
 delay_queue.critical_polling_time=1800
+
+#################### dynamic config end ###############################
 
 
 jdbc.driverClassName=com.mysql.jdbc.Driver
