@@ -4,6 +4,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.cjyfff.TestConfig;
 import com.cjyfff.dq.DelayQueueApplication;
@@ -68,13 +69,20 @@ public class LockTests {
 
             // 使用非线程安全的类，进行非线程安全的操作
             final Integer[] a = {0};
+            AtomicInteger standardCount = new AtomicInteger(0);
 
             for (int i = 0; i < 5; i++) {
                 pool.submit(() -> {
                     for (int j = 0; j < 100; j++) {
                         try {
+                            // 注意此处的 tryLock 是阻塞的，测试代码运行的时间在60秒内，因此 a 可以等于500
+                            // 假如是非阻塞或阻塞时间很短的话，a 就不等于500
                             LockObject lockObject = zkLock.tryLock(client, lockPath, lockKey, 60);
+                            if (! lockObject.isLockSuccess()) {
+                                continue;
+                            }
                             a[0]++;
+                            standardCount.getAndIncrement();
                             zkLock.tryUnlock(lockObject);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -91,7 +99,7 @@ public class LockTests {
 
             System.out.println("a: " + a[0]);
 
-            Assert.assertEquals(500, (int)a[0]);
+            Assert.assertEquals(standardCount.get(), (int)a[0]);
         } catch (Exception e) {
             e.printStackTrace();
         }
