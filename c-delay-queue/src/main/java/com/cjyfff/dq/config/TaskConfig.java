@@ -1,4 +1,4 @@
-package com.cjyfff.dq.common;
+package com.cjyfff.dq.config;
 
 /**
  * Created by jiashen on 18-12-12.
