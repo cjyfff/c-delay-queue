@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Slf4j
-public class AsyncQueueTaskConsumer {
+public class AsyncTaskConsumer {
 
     @Autowired
     private DelayTaskMapper delayTaskMapper;
@@ -38,7 +38,7 @@ public class AsyncQueueTaskConsumer {
 
     @Async("taskConsumerExecutor")
     @Transactional(rollbackFor = Exception.class)
-    public void doConsumer(QueueTask task) {
+    public void doConsumer(QueueInternalTask task) {
         // 1、乐观锁更新状态
         // 2、用task id 查出数据
         // 3、处理
@@ -78,7 +78,6 @@ public class AsyncQueueTaskConsumer {
 
                     Integer taskStatus;
                     if (delayTask.getRetryCount() > delayTask.getAlreadyRetryCount()) {
-                        // todo: 完善处理重试逻辑
                         task.setExecuteTime(System.currentTimeMillis() * 1000 + delayTask.getDelayTime());
                         acceptTaskComponent.pushToQueue(task);
                         taskStatus = TaskStatus.RETRYING.getStatus();

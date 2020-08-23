@@ -9,7 +9,7 @@ import com.cjyfff.dq.common.component.ExecLogComponent;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;
-import com.cjyfff.dq.task.queue.QueueTask;
+import com.cjyfff.dq.task.queue.QueueInternalTask;
 import com.cjyfff.dq.task.vo.dto.BaseMsgDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,7 +32,7 @@ public class MsgServiceComponent {
     private ExecLogComponent execLogComponent;
 
     public void doPush2Queue(DelayTask delayTask) {
-        QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());
+        QueueInternalTask task = new QueueInternalTask(delayTask.getTaskId(), delayTask.getExecuteTime());
         acceptTaskComponent.pushToQueue(task);
         delayTask.setStatus(TaskStatus.IN_QUEUE.getStatus());
         delayTask.setModifiedAt(new Date());

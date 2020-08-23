@@ -7,8 +7,8 @@ import com.cjyfff.election.core.info.ElectionStatus;
 import com.cjyfff.election.core.info.ElectionStatus.ElectionStatusType;
 import com.cjyfff.election.core.info.ShardingInfo;
 import com.cjyfff.dq.common.error.ApiException;
-import com.cjyfff.dq.task.queue.QueueTask;
-import com.cjyfff.dq.task.queue.DelayTaskQueue;
+import com.cjyfff.dq.task.queue.QueueInternalTask;
+import com.cjyfff.dq.task.queue.TaskQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class AcceptTaskComponent {
 
     @Autowired
-    private DelayTaskQueue delayTaskQueue;
+    private TaskQueue taskQueue;
 
     @Value("${delay_queue.critical_polling_time}")
     private Long criticalPollingTime;
@@ -65,8 +65,8 @@ public class AcceptTaskComponent {
      * 把任务放到延时队列
      * @param task
      */
-    public void pushToQueue(QueueTask task) {
-        delayTaskQueue.queue.add(task);
+    public void pushToQueue(QueueInternalTask task) {
+        taskQueue.queue.add(task);
     }
 
     /**
@@ -74,7 +74,7 @@ public class AcceptTaskComponent {
      */
     public void clearQueue() {
         log.warn("Prepare to clear the task queue...");
-        delayTaskQueue.queue.clear();
+        taskQueue.queue.clear();
     }
 
     /**

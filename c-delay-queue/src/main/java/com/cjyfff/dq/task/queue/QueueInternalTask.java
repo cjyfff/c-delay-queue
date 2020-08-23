@@ -11,7 +11,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class QueueTask implements Delayed {
+public class QueueInternalTask implements Delayed {
 
     private String taskId;
 
@@ -19,7 +19,7 @@ public class QueueTask implements Delayed {
 
     private Long executeTime;
 
-    public QueueTask(String taskId, Long executeTimeSec) {
+    public QueueInternalTask(String taskId, Long executeTimeSec) {
         this.taskId = taskId;
         this.delayTimeUnit = TimeUnit.MILLISECONDS;
         this.executeTime = executeTimeSec * 1000;

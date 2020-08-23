@@ -1,6 +1,6 @@
 package com.cjyfff.dq.task;
 
-import com.cjyfff.dq.task.queue.QueueTaskConsumer;
+import com.cjyfff.dq.task.queue.TaskTaker;
 import com.cjyfff.dq.task.transport.action.TransportInitAction;
 import com.cjyfff.election.core.Election;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class ProjectInitialization implements ApplicationListener<ApplicationRea
     private Election election;
 
     @Autowired
-    private QueueTaskConsumer queueTaskConsumer;
+    private TaskTaker taskTaker;
 
     @Autowired
     private TransportInitAction transportInitAction;
@@ -29,7 +29,7 @@ public class ProjectInitialization implements ApplicationListener<ApplicationRea
         log.debug("Starting init method...");
         election.start();
 
-        queueTaskConsumer.consumer();
+        taskTaker.takeTask();
 
         transportInitAction.startServer();
     }
