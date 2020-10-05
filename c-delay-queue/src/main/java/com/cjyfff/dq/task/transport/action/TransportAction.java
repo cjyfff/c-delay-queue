@@ -54,7 +54,7 @@ public class TransportAction {
             if (info.getKey() < myShardingId) {
                 // 连接其他节点netty服务
                 String serverHost = info.getValue().split(":")[0];
-                int serverPort = Integer.valueOf(info.getValue().split(":")[1]);
+                int serverPort = Integer.parseInt(info.getValue().split(":")[1]);
                 try {
                     connectServer(info.getKey(), serverHost, serverPort);
                 } catch (Exception e) {
