@@ -4,8 +4,8 @@ import java.util.Date;
 
 import com.cjyfff.dq.common.error.ApiException;
 import com.cjyfff.dq.common.enums.TaskStatus;
-import com.cjyfff.dq.common.component.AcceptTaskComponent;
-import com.cjyfff.dq.common.component.ExecLogComponent;
+import com.cjyfff.dq.task.component.AcceptTaskComponent;
+import com.cjyfff.dq.task.component.ExecLogComponent;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;

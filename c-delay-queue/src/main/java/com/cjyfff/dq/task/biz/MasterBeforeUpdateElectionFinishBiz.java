@@ -5,7 +5,7 @@ import java.util.List;
 import com.cjyfff.dq.task.transport.action.TransportAction;
 import com.cjyfff.election.biz.ElectionBiz;
 import com.cjyfff.dq.common.enums.TaskStatus;
-import com.cjyfff.dq.common.component.AcceptTaskComponent;
+import com.cjyfff.dq.task.component.AcceptTaskComponent;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;
 import org.slf4j.Logger;

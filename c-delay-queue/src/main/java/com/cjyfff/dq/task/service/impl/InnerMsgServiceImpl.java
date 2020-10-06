@@ -2,7 +2,7 @@ package com.cjyfff.dq.task.service.impl;
 
 import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.error.ApiException;
-import com.cjyfff.dq.common.component.AcceptTaskComponent;
+import com.cjyfff.dq.task.component.AcceptTaskComponent;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;
 import com.cjyfff.dq.task.model.DelayTask;

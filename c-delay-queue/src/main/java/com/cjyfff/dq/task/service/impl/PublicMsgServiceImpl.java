@@ -19,7 +19,7 @@ import com.cjyfff.dq.task.handler.ITaskHandler;
 import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.dq.task.service.PublicMsgService;
 import com.cjyfff.dq.task.vo.dto.AcceptMsgDto;
-import com.cjyfff.dq.common.component.AcceptTaskComponent;
+import com.cjyfff.dq.task.component.AcceptTaskComponent;
 import com.google.common.util.concurrent.RateLimiter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
