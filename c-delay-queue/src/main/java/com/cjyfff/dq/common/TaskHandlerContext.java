@@ -14,14 +14,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class TaskHandlerContext implements ApplicationContextAware {
-    private static ApplicationContext applicationContext = null;
 
     private static ConcurrentHashMap<String, ITaskHandler> taskHandlerMap = new ConcurrentHashMap<>();
 
+    /**
+    Spring 会在bean初始化后调用 ApplicationContextAware 的 setApplicationContext，把 applicationContext 传入
+    **/
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
-        TaskHandlerContext.applicationContext = applicationContext;
-
         Map<String, Object> serviceBeanMap = applicationContext.getBeansWithAnnotation(TaskHandler.class);
 
         if (serviceBeanMap.size()>0) {
@@ -34,10 +34,6 @@ public class TaskHandlerContext implements ApplicationContextAware {
                 }
             }
         }
-    }
-
-    public ApplicationContext getApplicationContext() {
-        return applicationContext;
     }
 
     public ITaskHandler getTaskHandler(String name){

@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
+import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreMutex;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -31,7 +32,7 @@ public class ZkLockImpl implements ZkLock {
                 return new LockObject(null, false);
             }
 
-            InterProcessLock lock = new MyInterProcessSemaphoreMutex(client, k);
+            InterProcessLock lock = new InterProcessSemaphoreMutex(client, k);
             if (lock.acquire(seconds, TimeUnit.SECONDS)) {
                 return new LockObject(lock, true);
             }

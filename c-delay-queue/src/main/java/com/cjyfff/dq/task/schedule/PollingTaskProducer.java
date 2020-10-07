@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.cjyfff.dq.config.DynamicConfig;
+import com.cjyfff.dq.task.model.DelayTask;
 import com.cjyfff.election.core.info.ElectionStatus;
 import com.cjyfff.election.core.info.ElectionStatus.ElectionStatusType;
 import com.cjyfff.election.core.info.ShardingInfo;
@@ -11,8 +12,7 @@ import com.cjyfff.dq.common.enums.TaskStatus;
 import com.cjyfff.dq.common.component.AcceptTaskComponent;
 import com.cjyfff.dq.common.component.ExecLogComponent;
 import com.cjyfff.dq.task.mapper.DelayTaskMapper;
-import com.cjyfff.dq.task.model.DelayTask;
-import com.cjyfff.dq.task.queue.QueueTask;
+import com.cjyfff.dq.task.queue.QueueInternalTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -59,7 +59,7 @@ public class PollingTaskProducer {
             ShardingInfo.getShardingId(), 0L, nowSecond + dynamicConfig.getCriticalPollingTime());
 
         for (DelayTask delayTask : taskList) {
-            QueueTask task = new QueueTask(delayTask.getTaskId(), delayTask.getExecuteTime());
+            QueueInternalTask task = new QueueInternalTask(delayTask.getTaskId(), delayTask.getExecuteTime());
             acceptTaskComponent.pushToQueue(task);
 
             delayTask.setStatus(TaskStatus.IN_QUEUE.getStatus());
