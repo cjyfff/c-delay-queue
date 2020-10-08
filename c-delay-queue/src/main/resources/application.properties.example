@@ -44,9 +44,8 @@ druidOption.setMaxWait=60000
 druidOption.setMinIdle=5
 # 根据((核心数 * 2) + 有效磁盘数)配置
 druidOption.setMaxActive=9
-druidOption.setPoolPreparedStatements=true
-druidOption.setMaxPoolPreparedStatementPerConnectionSize=20
-druidOption.setMaxOpenPreparedStatements=100
+# mysql需要设置为false
+druidOption.setPoolPreparedStatements=false
 druidOption.setMultiStatementAllow=true
 druidOption.dataSourceFilters=stat,wall,slf4j
 

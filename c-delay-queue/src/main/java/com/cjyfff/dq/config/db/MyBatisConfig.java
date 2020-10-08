@@ -45,12 +45,6 @@ public class MyBatisConfig {
     @Value("${druidOption.setPoolPreparedStatements}")
     boolean poolPreparedStatements;
 
-    @Value("${druidOption.setMaxPoolPreparedStatementPerConnectionSize}")
-    int maxPoolPreparedStatementPerConnectionSize;
-
-    @Value("${druidOption.setMaxOpenPreparedStatements}")
-    int maxOpenPreparedStatements;
-
     @Value("${druidOption.dataSourceFilters}")
     String dataSourceFilters;
 
@@ -122,8 +116,6 @@ public class MyBatisConfig {
         druidDataSource.setMinIdle(minIdle);
         druidDataSource.setMaxActive(maxActive);
         druidDataSource.setPoolPreparedStatements(poolPreparedStatements);
-        druidDataSource.setMaxPoolPreparedStatementPerConnectionSize(maxPoolPreparedStatementPerConnectionSize);
-        druidDataSource.setMaxOpenPreparedStatements(maxOpenPreparedStatements);
         druidDataSource.setUsername(username);
         druidDataSource.setPassword(password);
         List<Filter> proxyFilters = new ArrayList<>();
