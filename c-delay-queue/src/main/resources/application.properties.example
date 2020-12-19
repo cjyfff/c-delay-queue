@@ -31,13 +31,6 @@ jdbc.read.url=jdbc:mysql://192.168.43.101:3306/delay_queue?zeroDateTimeBehavior=
 jdbc.read.username=root
 jdbc.read.password=xxxxx
 
-druidOption.allowHost=127.0.0.1
-druidOption.denyHost=192.168.1.73
-druidOption.loginUsername=admin
-druidOption.loginPassword=12345
-druidOption.resetEnable=false
-druidOption.addUrlPatterns=/*
-druidOption.exclusions=*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*
 
 druidOption.setTestWhileIdle=true
 druidOption.setMaxWait=60000
