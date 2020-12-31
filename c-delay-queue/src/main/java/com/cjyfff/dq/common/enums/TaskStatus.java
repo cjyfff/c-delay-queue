@@ -24,6 +24,15 @@ public enum TaskStatus {
         this.desc = desc;
     }
 
+    public String getDescByStat(Integer stat) {
+        for (TaskStatus t : TaskStatus.values()) {
+            if (t.getStatus().equals(stat)) {
+                return t.getDesc();
+            }
+        }
+        return null;
+    }
+
     public Integer getStatus() {
         return status;
     }
