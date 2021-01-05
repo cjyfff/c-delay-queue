@@ -7,7 +7,7 @@ public class DefaultWebApiResult {
     public final static String SUCCESS_CODE = "0";
     public final static String SUCCESS_MSG = "OK";
 
-    private final static DefaultWebApiResult SUCCESS_WITH_NO_RESULT = new DefaultWebApiResult(SUCCESS_MSG, SUCCESS_CODE);
+    private final static DefaultWebApiResult SUCCESS_WITH_NO_RESULT = new DefaultWebApiResult(SUCCESS_CODE, SUCCESS_MSG);
 
     private String code;
     private String msg;
@@ -22,7 +22,7 @@ public class DefaultWebApiResult {
         this.result = result;
     }
 
-    public DefaultWebApiResult(String resMsg, String retCode) {
+    public DefaultWebApiResult(String retCode, String resMsg) {
         this.msg = resMsg;
         this.code = retCode;
     }
