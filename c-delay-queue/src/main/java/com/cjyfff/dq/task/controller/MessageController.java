@@ -1,5 +1,6 @@
 package com.cjyfff.dq.task.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.cjyfff.dq.common.error.ErrorCodeMsg;
 import com.cjyfff.dq.common.lock.ZkLockImpl.LockObject;
 import com.cjyfff.dq.task.vo.dto.BaseMsgDto;
@@ -11,8 +12,10 @@ import com.cjyfff.dq.config.TaskConfig;
 import com.cjyfff.dq.common.lock.ZkLock;
 import com.cjyfff.dq.task.service.PublicMsgService;
 import com.cjyfff.dq.task.vo.dto.AcceptMsgDto;
+import com.google.common.util.concurrent.RateLimiter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +39,23 @@ public class MessageController extends BaseController {
     @Autowired
     private ZooKeeperClient zooKeeperClient;
 
+    @Value("${delay_queue.task_rate_limit_permits}")
+    private double taskRateLimitPermits;
+
+    @Value("${delay_queue.enable_task_rate_limit}")
+    private boolean enableTaskRateLimit;
+
+    private RateLimiter rateLimiter;
+
+    public MessageController(@Value("${delay_queue.enable_task_rate_limit}") boolean etl,
+                                @Value("${delay_queue.task_rate_limit_permits}") double tlp) {
+        if (etl) {
+            if (tlp > 0) {
+                rateLimiter = RateLimiter.create(tlp);
+            }
+        }
+    }
+
     /**
      * 接收外部消息
      */
@@ -44,6 +64,9 @@ public class MessageController extends BaseController {
 
         LockObject lockObject = null;
         try {
+
+            checkLimit();
+
             checkParams(reqDto);
 
             lockObject = zkLock.idempotentLock(zooKeeperClient.getClient(), TaskConfig.ACCEPT_TASK_LOCK_PATH, reqDto.getNonceStr());
@@ -70,6 +93,19 @@ public class MessageController extends BaseController {
         } finally {
             if (lockObject != null && lockObject.isLockSuccess()) {
                 zkLock.tryUnlock(lockObject);
+            }
+        }
+    }
+
+    private void checkLimit() throws ApiException {
+        // 限流逻辑
+        if (enableTaskRateLimit) {
+            if (rateLimiter == null) {
+                throw new ApiException(ErrorCodeMsg.SYSTEM_ERROR_CODE, "RateLimiter is not initialization, check the configuration.");
+            }
+            if (! rateLimiter.tryAcquire(1)) {
+                log.warn("Reach task rate limit");
+                throw new ApiException(ErrorCodeMsg.REACH_ACCESS_LIMIT_ERROR_CODE, ErrorCodeMsg.REACH_ACCESS_LIMIT_ERROR_MSG);
             }
         }
     }

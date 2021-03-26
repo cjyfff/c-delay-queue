@@ -33,4 +33,7 @@ public class ErrorCodeMsg {
 
     public static String CAN_NOT_FIND_TASK_ERROR_CODE = "-107";
     public static String CAN_NOT_FIND_TASK_ERROR_MSG = "Can not find task.";
+
+    public static String REACH_ACCESS_LIMIT_ERROR_CODE = "-108";
+    public static String REACH_ACCESS_LIMIT_ERROR_MSG = "Reach access limit.";
 }
