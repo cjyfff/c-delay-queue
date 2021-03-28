@@ -30,9 +30,9 @@ public class UnlockAfterDbCommitAspect {
             return;
         }
 
-        for (Entry entry : unlockInfoMap.entrySet()) {
-            String k = (String) entry.getKey();
-            UnlockAfterDbCommitInfo info = (UnlockAfterDbCommitInfo) entry.getValue();
+        for (Entry<String, UnlockAfterDbCommitInfo> entry : unlockInfoMap.entrySet()) {
+            String k = entry.getKey();
+            UnlockAfterDbCommitInfo info = entry.getValue();
             if (info.isNeedUnlock()) {
                 zkLock.tryUnlock(info.getLockObject());
             }
