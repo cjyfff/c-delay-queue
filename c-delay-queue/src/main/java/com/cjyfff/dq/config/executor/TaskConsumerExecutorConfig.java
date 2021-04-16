@@ -25,6 +25,8 @@ public class TaskConsumerExecutorConfig {
         taskExecutor.setThreadNamePrefix("TaskConsumer-");
 
         taskExecutor.initialize();
+
+        TaskExecutor.taskConsumerExecutor = taskExecutor;
         return taskExecutor;
     }
 }

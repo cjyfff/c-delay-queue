@@ -25,6 +25,8 @@ public class AsyncAcceptInnerTaskExecutorConfig {
         taskExecutor.setThreadNamePrefix("acceptInnerTask-");
 
         taskExecutor.initialize();
+
+        TaskExecutor.asyncAcceptInnerTaskExecutor = taskExecutor;
         return taskExecutor;
     }
 }
