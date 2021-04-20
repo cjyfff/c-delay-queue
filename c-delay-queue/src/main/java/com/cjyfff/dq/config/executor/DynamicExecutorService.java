@@ -13,12 +13,15 @@ public class DynamicExecutorService {
             throw new IllegalArgumentException("Illegal type");
         }
 
-        if (corePoolSize != null) {
-            executor.setCorePoolSize(corePoolSize);
-        }
+        // reference form https://www.cnblogs.com/thisiswhy/p/12690630.html, should configure MaxPoolSize first
         if (maxPoolSize != null) {
             executor.setMaxPoolSize(maxPoolSize);
         }
+
+        if (corePoolSize != null) {
+            executor.setCorePoolSize(corePoolSize);
+        }
+
         if (queueCapacity != null) {
             executor.setQueueCapacity(queueCapacity);
         }
