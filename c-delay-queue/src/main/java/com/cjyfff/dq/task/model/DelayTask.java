@@ -22,6 +22,8 @@ public class DelayTask {
 
     private Long executeTime;
 
+    private Long executeTimeout;
+
     private Integer retryInterval;
 
     private Long retryTime;

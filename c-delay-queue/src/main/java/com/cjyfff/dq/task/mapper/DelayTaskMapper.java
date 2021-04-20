@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface DelayTaskMapper {
     int deleteByPrimaryKey(Long id);
 
-    int insert(DelayTask record);
-
     int insertSelective(DelayTask record);
 
     DelayTask selectByPrimaryKey(Long id);
@@ -41,5 +39,4 @@ public interface DelayTaskMapper {
     List<DelayTask> selectByStatusAndShardingId(@Param(value = "status") Integer status,
                                                          @Param(value = "shardingId") Integer shardingId);
 
-    int updateByPrimaryKey(DelayTask record);
 }
