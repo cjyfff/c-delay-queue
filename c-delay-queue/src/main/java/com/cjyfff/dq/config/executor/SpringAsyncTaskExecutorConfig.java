@@ -1,7 +1,7 @@
 package com.cjyfff.dq.config.executor;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import com.cjyfff.dq.config.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
+ * Spring 自身默认的线程池
  * Created by jiashen on 2018/10/4.
  */
 @Configuration
@@ -24,7 +25,7 @@ public class SpringAsyncTaskExecutorConfig implements AsyncConfigurer {
         taskExecutor.setMaxPoolSize(10);
         taskExecutor.setQueueCapacity(100);
         taskExecutor.setKeepAliveSeconds(10);
-        taskExecutor.setRejectedExecutionHandler(new CallerRunsPolicy());
+        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
 
         taskExecutor.initialize();
         return taskExecutor;

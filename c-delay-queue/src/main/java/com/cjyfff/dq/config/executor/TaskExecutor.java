@@ -11,9 +11,9 @@ public class TaskExecutor {
 
     public TaskExecutor() {
         // todo: 优化线程池参数
-        this.taskExecutor = new ThreadPoolExecutor(10, 20,
+        this.taskExecutor = new ThreadPoolExecutor(50, 70,
                 30, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>(1000));
+                new LinkedBlockingQueue<>(1000), new ThreadPoolExecutor.AbortPolicy());
 
         TaskExecutorHolder.taskExecutor = this.taskExecutor;
     }
