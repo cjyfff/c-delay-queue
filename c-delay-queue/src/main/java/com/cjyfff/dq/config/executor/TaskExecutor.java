@@ -2,8 +2,7 @@ package com.cjyfff.dq.config.executor;
 
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 @Component
 public class TaskExecutor {
@@ -12,7 +11,9 @@ public class TaskExecutor {
 
     public TaskExecutor() {
         // todo: 优化线程池参数
-        this.taskExecutor = Executors.newSingleThreadExecutor();
+        this.taskExecutor = new ThreadPoolExecutor(10, 20,
+                30, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(1000));
 
         TaskExecutorHolder.taskExecutor = this.taskExecutor;
     }
