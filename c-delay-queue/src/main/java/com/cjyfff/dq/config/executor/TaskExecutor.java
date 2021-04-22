@@ -1,9 +1,23 @@
 package com.cjyfff.dq.config.executor;
 
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+@Component
 public class TaskExecutor {
-    public static ThreadPoolTaskExecutor asyncAcceptInnerTaskExecutor;
 
-    public static ThreadPoolTaskExecutor taskConsumerExecutor;
+    private ExecutorService taskExecutor;
+
+    public TaskExecutor() {
+        // todo: 优化线程池参数
+        this.taskExecutor = Executors.newSingleThreadExecutor();
+
+        TaskExecutorHolder.taskExecutor = this.taskExecutor;
+    }
+
+    public ExecutorService getTaskExecutor() {
+        return taskExecutor;
+    }
 }

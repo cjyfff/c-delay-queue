@@ -26,7 +26,7 @@ public class AsyncAcceptInnerTaskExecutorConfig {
 
         taskExecutor.initialize();
 
-        TaskExecutor.asyncAcceptInnerTaskExecutor = taskExecutor;
+        TaskExecutorHolder.asyncAcceptInnerTaskExecutor = taskExecutor;
         return taskExecutor;
     }
 }

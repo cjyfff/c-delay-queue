@@ -9,8 +9,8 @@ public class DynamicExecutorTypeSelector {
 
     private static final Map<Integer, ThreadPoolTaskExecutor> EXECUTOR_TYPE_MAP =
             ImmutableMap.<Integer, ThreadPoolTaskExecutor>builder()
-            .put(1, TaskExecutor.asyncAcceptInnerTaskExecutor)
-            .put(2, TaskExecutor.taskConsumerExecutor)
+            .put(1, TaskExecutorHolder.asyncAcceptInnerTaskExecutor)
+            .put(2, TaskExecutorHolder.queueConsumerExecutor)
             .build();
 
     public static ThreadPoolTaskExecutor getExecutorByType(Integer type) {

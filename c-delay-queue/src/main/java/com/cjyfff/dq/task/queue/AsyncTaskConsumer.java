@@ -1,8 +1,11 @@
 package com.cjyfff.dq.task.queue;
 
 import java.util.Date;
+import java.util.concurrent.*;
 
+import com.alibaba.fastjson.JSON;
 import com.cjyfff.dq.common.TaskHandlerContext;
+import com.cjyfff.dq.config.executor.TaskExecutor;
 import com.cjyfff.dq.task.component.AcceptTaskComponent;
 import com.cjyfff.dq.task.component.ExecLogComponent;
 import com.cjyfff.dq.common.enums.TaskStatus;
@@ -16,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.cjyfff.dq.task.handler.HandlerResult.*;
 
 /**
  * Created by jiashen on 18-12-29.
@@ -36,7 +41,10 @@ public class AsyncTaskConsumer {
     @Autowired
     private AcceptTaskComponent acceptTaskComponent;
 
-    @Async("taskConsumerExecutor")
+    @Autowired
+    private TaskExecutor taskExecutor;
+
+    @Async("queueConsumerExecutor")
     @Transactional(rollbackFor = Exception.class)
     public void doConsumer(QueueInternalTask task) {
         // 1、乐观锁更新状态
@@ -63,7 +71,30 @@ public class AsyncTaskConsumer {
                 execLogComponent.insertLog(delayTask, taskStatus, errorMsg);
 
             } else {
-                HandlerResult result = taskHandler.run(delayTask.getParams());
+
+                FutureTask<String> futureTask = new FutureTask<>(new Callable<String>() {
+
+                    @Override
+                    public String call() throws Exception {
+                        HandlerResult result = taskHandler.run(delayTask.getParams());
+                        return JSON.toJSONString(result);
+                    }
+                });
+                taskExecutor.getTaskExecutor().submit(futureTask);
+
+                String resultStr;
+                try {
+                    resultStr = futureTask.get(delayTask.getExecuteTimeout(), TimeUnit.SECONDS);
+                } catch (TimeoutException e) {
+                    HandlerResult timeoutResult = new HandlerResult(DEFAULT_TIMEOUT_CODE, DEFAULT_TIMEOUT_MSG);
+                    resultStr = JSON.toJSONString(timeoutResult);
+                } catch (Exception e) {
+                    log.error("doConsumer get error: ", e);
+                    HandlerResult timeoutResult = new HandlerResult(DEFAULT_SYSTEM_ERROR_CODE, DEFAULT_SYSTEM_ERROR_MSG);
+                    resultStr = JSON.toJSONString(timeoutResult);
+                }
+
+                HandlerResult result = JSON.parseObject(resultStr, HandlerResult.class);
 
                 if (HandlerResult.SUCCESS_CODE.equals(result.getResultCode())) {
                     Integer taskStatus = TaskStatus.PROCESS_SUCCESS.getStatus();
@@ -83,10 +114,18 @@ public class AsyncTaskConsumer {
                         taskStatus = TaskStatus.RETRYING.getStatus();
 
                     } else if (delayTask.getRetryCount() == 0) {
-                        taskStatus = TaskStatus.PROCESS_FAIL.getStatus();
+                        if (HandlerResult.DEFAULT_TIMEOUT_CODE.equals(result.getResultCode())) {
+                            taskStatus = TaskStatus.TIMEOUT.getStatus();
+                        } else {
+                            taskStatus = TaskStatus.PROCESS_FAIL.getStatus();
+                        }
 
                     } else {
-                        taskStatus = TaskStatus.RETRY_FAIL.getStatus();
+                        if (HandlerResult.DEFAULT_TIMEOUT_CODE.equals(result.getResultCode())) {
+                            taskStatus = TaskStatus.TIMEOUT.getStatus();
+                        } else {
+                            taskStatus = TaskStatus.PROCESS_FAIL.getStatus();
+                        }
 
                     }
                     delayTask.setStatus(taskStatus);

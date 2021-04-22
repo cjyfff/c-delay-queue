@@ -14,6 +14,14 @@ public class HandlerResult {
 
     public static final Integer DEFAULT_FAIL_CODE = -1;
 
+    public static final Integer DEFAULT_TIMEOUT_CODE = -31008;
+
+    public static final String DEFAULT_TIMEOUT_MSG = "任務調度超時";
+
+    public static final Integer DEFAULT_SYSTEM_ERROR_CODE = -99999;
+
+    public static final String DEFAULT_SYSTEM_ERROR_MSG = "任務調度異常";
+
     public HandlerResult(Integer resultCode, String msg, String result) {
         this.resultCode = resultCode;
         this.msg = msg;

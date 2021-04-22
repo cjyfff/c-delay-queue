@@ -11,22 +11,23 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * Created by jiashen on 19-1-8.
  */
 @Configuration
-public class TaskConsumerExecutorConfig {
+public class QueueConsumerExecutorConfig {
 
     @Bean
-    public Executor taskConsumerExecutor() {
+    public Executor queueConsumerExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
 
         taskExecutor.setCorePoolSize(10);
         taskExecutor.setMaxPoolSize(20);
         taskExecutor.setQueueCapacity(1000);
         taskExecutor.setKeepAliveSeconds(10);
+        // todo: 考虑使用其他阻塞策略
         taskExecutor.setRejectedExecutionHandler(new CallerRunsPolicy());
         taskExecutor.setThreadNamePrefix("TaskConsumer-");
 
         taskExecutor.initialize();
 
-        TaskExecutor.taskConsumerExecutor = taskExecutor;
+        TaskExecutorHolder.queueConsumerExecutor = taskExecutor;
         return taskExecutor;
     }
 }
