@@ -84,7 +84,11 @@ public class AsyncTaskConsumer {
 
                 String resultStr;
                 try {
-                    resultStr = futureTask.get(delayTask.getExecuteTimeout(), TimeUnit.SECONDS);
+                    if (delayTask.getExecuteTimeout() == null || delayTask.getExecuteTimeout() <= 0) {
+                        resultStr = futureTask.get();
+                    } else {
+                        resultStr = futureTask.get(delayTask.getExecuteTimeout(), TimeUnit.SECONDS);
+                    }
                 } catch (TimeoutException e) {
                     HandlerResult timeoutResult = new HandlerResult(DEFAULT_TIMEOUT_CODE, DEFAULT_TIMEOUT_MSG);
                     resultStr = JSON.toJSONString(timeoutResult);
