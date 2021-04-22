@@ -113,13 +113,6 @@ public class AsyncTaskConsumer {
                         acceptTaskComponent.pushToQueue(task);
                         taskStatus = TaskStatus.RETRYING.getStatus();
 
-                    } else if (delayTask.getRetryCount() == 0) {
-                        if (HandlerResult.DEFAULT_TIMEOUT_CODE.equals(result.getResultCode())) {
-                            taskStatus = TaskStatus.TIMEOUT.getStatus();
-                        } else {
-                            taskStatus = TaskStatus.PROCESS_FAIL.getStatus();
-                        }
-
                     } else {
                         if (HandlerResult.DEFAULT_TIMEOUT_CODE.equals(result.getResultCode())) {
                             taskStatus = TaskStatus.TIMEOUT.getStatus();
