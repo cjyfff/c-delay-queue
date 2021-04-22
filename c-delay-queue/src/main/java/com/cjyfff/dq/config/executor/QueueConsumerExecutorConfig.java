@@ -25,12 +25,12 @@ public class QueueConsumerExecutorConfig {
         taskExecutor.setCorePoolSize(10);
         taskExecutor.setMaxPoolSize(20);
         taskExecutor.setQueueCapacity(1000);
-        taskExecutor.setKeepAliveSeconds(10);
+        taskExecutor.setKeepAliveSeconds(60);
         // todo: 后续，当线程池满了的时候
         //  1、考虑维护一个系统状态，当线程池满时，新增任务返回特殊错误码给调用方，让调用方不再请求。
         //  2、任务更新为失败状态
         taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
-        taskExecutor.setThreadNamePrefix("TaskConsumer-");
+        taskExecutor.setThreadNamePrefix("QueueConsumer-");
 
         taskExecutor.initialize();
 

@@ -20,7 +20,7 @@ public class AsyncAcceptInnerTaskExecutorConfig {
         taskExecutor.setCorePoolSize(5);
         taskExecutor.setMaxPoolSize(10);
         taskExecutor.setQueueCapacity(500);
-        taskExecutor.setKeepAliveSeconds(10);
+        taskExecutor.setKeepAliveSeconds(60);
         taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
         taskExecutor.setThreadNamePrefix("acceptInnerTask-");
 

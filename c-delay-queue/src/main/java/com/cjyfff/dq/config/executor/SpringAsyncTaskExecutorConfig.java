@@ -24,7 +24,7 @@ public class SpringAsyncTaskExecutorConfig implements AsyncConfigurer {
         taskExecutor.setCorePoolSize(5);
         taskExecutor.setMaxPoolSize(10);
         taskExecutor.setQueueCapacity(100);
-        taskExecutor.setKeepAliveSeconds(10);
+        taskExecutor.setKeepAliveSeconds(60);
         taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
 
         taskExecutor.initialize();
