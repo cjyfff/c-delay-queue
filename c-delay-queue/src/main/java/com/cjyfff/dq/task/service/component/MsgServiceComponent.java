@@ -75,7 +75,7 @@ public class MsgServiceComponent {
         delayTask.setModifiedAt(new Date());
         delayTask.setShardingId(acceptTaskComponent.getShardingIdByTaskId(reqDto.getTaskId()));
 
-        delayTaskMapper.insert(delayTask);
+        delayTaskMapper.insertSelective(delayTask);
 
         execLogComponent.insertLog(delayTask, TaskStatus.ACCEPT.getStatus(), String.format("Insert task: %s", reqDto.getTaskId()));
 
