@@ -65,4 +65,10 @@ public class BaseMsgDto {
     @Min(1)
     @Max(60)
     private Integer retryInterval;
+
+    /**
+     * 执行超时时间
+     */
+    @Min(0L)
+    private Long executeTimeout;
 }

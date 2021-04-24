@@ -90,6 +90,7 @@ public class AsyncTaskConsumer {
                         resultStr = futureTask.get(delayTask.getExecuteTimeout(), TimeUnit.SECONDS);
                     }
                 } catch (TimeoutException e) {
+                    log.info("job time out, id: {}", delayTask.getTaskId());
                     HandlerResult timeoutResult = new HandlerResult(DEFAULT_TIMEOUT_CODE, DEFAULT_TIMEOUT_MSG);
                     resultStr = JSON.toJSONString(timeoutResult);
                 } catch (Exception e) {
